@@ -1,0 +1,98 @@
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data xml:space="preserve" name="AppTitle">
+    <value>Blood pressure diary</value>
+  </data>
+  <data xml:space="preserve" name="Measurements">
+    <value>Measurements</value>
+  </data>
+  <data xml:space="preserve" name="Settings">
+    <value>Settings</value>
+  </data>
+  <data xml:space="preserve" name="Systolic">
+    <value>Systolic (mmHg)</value>
+  </data>
+  <data xml:space="preserve" name="Diastolic">
+    <value>Diastolic (mmHg)</value>
+  </data>
+  <data xml:space="preserve" name="Pulse">
+    <value>Pulse (optional)</value>
+  </data>
+  <data xml:space="preserve" name="Note">
+    <value>Note (optional)</value>
+  </data>
+  <data xml:space="preserve" name="Date">
+    <value>Date</value>
+  </data>
+  <data xml:space="preserve" name="Time">
+    <value>Time</value>
+  </data>
+  <data xml:space="preserve" name="Save">
+    <value>Save</value>
+  </data>
+  <data xml:space="preserve" name="Edit">
+    <value>Edit</value>
+  </data>
+  <data xml:space="preserve" name="Delete">
+    <value>Delete</value>
+  </data>
+  <data xml:space="preserve" name="Cancel">
+    <value>Cancel</value>
+  </data>
+  <data xml:space="preserve" name="Actions">
+    <value>Actions</value>
+  </data>
+  <data xml:space="preserve" name="DailyReminder">
+    <value>Daily measurement reminder</value>
+  </data>
+  <data xml:space="preserve" name="ReminderTime">
+    <value>Reminder time</value>
+  </data>
+  <data xml:space="preserve" name="ConfirmDelete">
+    <value>Delete this measurement?</value>
+  </data>
+  <data xml:space="preserve" name="Error">
+    <value>Error</value>
+  </data>
+  <data xml:space="preserve" name="Ok">
+    <value>OK</value>
+  </data>
+  <data xml:space="preserve" name="StorageError">
+    <value>Could not load or save measurements. Please try again.</value>
+  </data>
+  <data xml:space="preserve" name="InvalidMeasurement">
+    <value>Enter pressure from 1 to 300, with systolic greater than diastolic. Optional pulse must be from 1 to 300. Notes may contain up to 1000 characters.</value>
+  </data>
+  <data xml:space="preserve" name="NotificationDenied">
+    <value>Allow notifications in Android settings to enable reminders.</value>
+  </data>
+  <data xml:space="preserve" name="ReminderError">
+    <value>Could not save the reminder. Please try again.</value>
+  </data>
+  <data xml:space="preserve" name="ReminderTitle">
+    <value>Time to measure your blood pressure</value>
+  </data>
+  <data xml:space="preserve" name="ReminderBody">
+    <value>Take a measurement and record it in your diary.</value>
+  </data>
+  <data xml:space="preserve" name="ReminderChannel">
+    <value>Measurement reminders</value>
+  </data>
+  <data xml:space="preserve" name="Empty">
+    <value>No measurements yet.</value>
+  </data>
+  <data xml:space="preserve" name="ReminderHint">
+    <value>Android may delay reminders to save battery. Save to apply changes.</value>
+  </data>
+</root>

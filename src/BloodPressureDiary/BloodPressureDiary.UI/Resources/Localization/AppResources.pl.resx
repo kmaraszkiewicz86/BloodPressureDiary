@@ -1,0 +1,98 @@
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms</value>
+  </resheader>
+  <data xml:space="preserve" name="AppTitle">
+    <value>Dzienniczek ciśnienia</value>
+  </data>
+  <data xml:space="preserve" name="Measurements">
+    <value>Pomiary</value>
+  </data>
+  <data xml:space="preserve" name="Settings">
+    <value>Ustawienia</value>
+  </data>
+  <data xml:space="preserve" name="Systolic">
+    <value>Skurczowe (mmHg)</value>
+  </data>
+  <data xml:space="preserve" name="Diastolic">
+    <value>Rozkurczowe (mmHg)</value>
+  </data>
+  <data xml:space="preserve" name="Pulse">
+    <value>Puls (opcjonalnie)</value>
+  </data>
+  <data xml:space="preserve" name="Note">
+    <value>Notatka (opcjonalnie)</value>
+  </data>
+  <data xml:space="preserve" name="Date">
+    <value>Data</value>
+  </data>
+  <data xml:space="preserve" name="Time">
+    <value>Godzina</value>
+  </data>
+  <data xml:space="preserve" name="Save">
+    <value>Zapisz</value>
+  </data>
+  <data xml:space="preserve" name="Edit">
+    <value>Edytuj</value>
+  </data>
+  <data xml:space="preserve" name="Delete">
+    <value>Usuń</value>
+  </data>
+  <data xml:space="preserve" name="Cancel">
+    <value>Anuluj</value>
+  </data>
+  <data xml:space="preserve" name="Actions">
+    <value>Działania</value>
+  </data>
+  <data xml:space="preserve" name="DailyReminder">
+    <value>Codzienne przypomnienie o pomiarze</value>
+  </data>
+  <data xml:space="preserve" name="ReminderTime">
+    <value>Godzina przypomnienia</value>
+  </data>
+  <data xml:space="preserve" name="ConfirmDelete">
+    <value>Czy usunąć ten pomiar?</value>
+  </data>
+  <data xml:space="preserve" name="Error">
+    <value>Błąd</value>
+  </data>
+  <data xml:space="preserve" name="Ok">
+    <value>OK</value>
+  </data>
+  <data xml:space="preserve" name="StorageError">
+    <value>Nie udało się odczytać lub zapisać pomiarów. Spróbuj ponownie.</value>
+  </data>
+  <data xml:space="preserve" name="InvalidMeasurement">
+    <value>Wpisz ciśnienie od 1 do 300, skurczowe większe od rozkurczowego. Opcjonalny puls musi wynosić od 1 do 300. Notatka może mieć do 1000 znaków.</value>
+  </data>
+  <data xml:space="preserve" name="NotificationDenied">
+    <value>Zezwól na powiadomienia w ustawieniach Androida, aby włączyć przypomnienia.</value>
+  </data>
+  <data xml:space="preserve" name="ReminderError">
+    <value>Nie udało się zapisać przypomnienia. Spróbuj ponownie.</value>
+  </data>
+  <data xml:space="preserve" name="ReminderTitle">
+    <value>Czas zmierzyć ciśnienie</value>
+  </data>
+  <data xml:space="preserve" name="ReminderBody">
+    <value>Wykonaj pomiar i zapisz go w dzienniczku.</value>
+  </data>
+  <data xml:space="preserve" name="ReminderChannel">
+    <value>Przypomnienia o pomiarze</value>
+  </data>
+  <data xml:space="preserve" name="Empty">
+    <value>Brak zapisanych pomiarów.</value>
+  </data>
+  <data xml:space="preserve" name="ReminderHint">
+    <value>Android może opóźniać przypomnienia, aby oszczędzać baterię. Zapisz, aby zastosować zmiany.</value>
+  </data>
+</root>

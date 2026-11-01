@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:loc="clr-namespace:BloodPressureDiary.UI.Resources.Localization" x:Class="BloodPressureDiary.UI.SettingsPage" Title="{x:Static loc:AppResources.Settings}">
+ <ScrollView><VerticalStackLayout Padding="20" Spacing="16" IsEnabled="{Binding IsAvailable}">
+  <Label Text="{x:Static loc:AppResources.DailyReminder}" />
+  <Switch IsToggled="{Binding Enabled}" SemanticProperties.Description="{x:Static loc:AppResources.DailyReminder}" />
+  <Label Text="{x:Static loc:AppResources.ReminderTime}" />
+  <TimePicker Time="{Binding Time}" SemanticProperties.Description="{x:Static loc:AppResources.ReminderTime}" />
+  <Label Text="{x:Static loc:AppResources.ReminderHint}" />
+  <Button Text="{x:Static loc:AppResources.Save}" Command="{Binding SaveCommand}" />
+  <Button Text="{x:Static loc:AppResources.Measurements}" Command="{Binding MeasurementsCommand}" />
+ </VerticalStackLayout></ScrollView>
+</ContentPage>
