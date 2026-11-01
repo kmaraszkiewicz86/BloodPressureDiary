@@ -6,7 +6,16 @@
     xmlns:local="clr-namespace:BloodPressureDiary.UI"
     xmlns:views="clr-namespace:BloodPressureDiary.UI.Views"
     xmlns:localization="clr-namespace:BloodPressureDiary.UI.Resources.Localization"
-    Title="{x:Static localization:AppResources.AppTitle}">
+    Title="{x:Static localization:AppResources.AppTitle}"
+    FlyoutBackgroundColor="{AppThemeBinding Light=White, Dark=#1F1F1F}"
+    Shell.BackgroundColor="{AppThemeBinding Light=White, Dark=#1F1F1F}"
+    Shell.ForegroundColor="{AppThemeBinding Light=#212121, Dark=White}"
+    Shell.TitleColor="{AppThemeBinding Light=#212121, Dark=White}"
+    Shell.UnselectedColor="{AppThemeBinding Light=#404040, Dark=#C8C8C8}"
+    Shell.TabBarBackgroundColor="{AppThemeBinding Light=White, Dark=#1F1F1F}"
+    Shell.TabBarForegroundColor="{AppThemeBinding Light=#512BD4, Dark=White}"
+    Shell.TabBarTitleColor="{AppThemeBinding Light=#512BD4, Dark=White}"
+    Shell.TabBarUnselectedColor="{AppThemeBinding Light=#404040, Dark=#C8C8C8}">
 
     <ShellContent
         x:Name="MainTab"
