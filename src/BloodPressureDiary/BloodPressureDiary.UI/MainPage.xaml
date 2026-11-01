@@ -167,7 +167,6 @@
                                 </Grid>
 
                                 <!-- Notes -->
-                                <!-- Notes -->
                                 <VerticalStackLayout Spacing="4">
                                     <Label
                                         Text="{x:Static localization:AppResources.Notes}"
@@ -185,11 +184,6 @@
                                         IsVisible="{Binding IsEditing}" />
                                 </VerticalStackLayout>
 
-                                <Entry
-                                    Text="{Binding NotesInput}"
-                                    Placeholder="{x:Static localization:AppResources.Notes}"
-                                    IsVisible="{Binding IsEditing}" />
-
                                 <!-- Actions -->
                                 <HorizontalStackLayout
                                     Spacing="8"
@@ -204,6 +198,22 @@
                                     <Button
                                         Text="{x:Static localization:AppResources.Delete}"
                                         Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteCommand}"
+                                        CommandParameter="{Binding .}" />
+                                </HorizontalStackLayout>
+
+                                <HorizontalStackLayout
+                                    Spacing="8"
+                                    HorizontalOptions="End"
+                                    IsVisible="{Binding IsEditing}">
+
+                                    <Button
+                                        Text="{x:Static localization:AppResources.Save}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SaveEditCommand}"
+                                        CommandParameter="{Binding .}" />
+
+                                    <Button
+                                        Text="{x:Static localization:AppResources.Cancel}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.CancelEditCommand}"
                                         CommandParameter="{Binding .}" />
                                 </HorizontalStackLayout>
 
