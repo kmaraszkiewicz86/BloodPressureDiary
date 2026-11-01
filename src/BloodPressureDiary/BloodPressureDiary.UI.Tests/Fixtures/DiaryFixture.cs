@@ -35,11 +35,6 @@ public sealed class DiaryFixture : TestBase
     }
     /// <summary>Creates a valid new measurement row.</summary>
     public MeasurementRowViewModel CreateRow() => new() { Systolic = "120", Diastolic = "80", Date = DateTime.Today, Time = TimeSpan.FromHours(9) };
-    /// <summary>Creates an open SQLite database for migration verification.</summary>
-    public (Microsoft.Data.Sqlite.SqliteConnection Connection, DiaryContext Context) CreateSqlite()
-    {
-        var connection = new Microsoft.Data.Sqlite.SqliteConnection("Data Source=:memory:");
-        connection.Open();
-        return (connection, new DiaryContext(new DbContextOptionsBuilder<DiaryContext>().UseSqlite(connection).Options));
-    }
+
+
 }

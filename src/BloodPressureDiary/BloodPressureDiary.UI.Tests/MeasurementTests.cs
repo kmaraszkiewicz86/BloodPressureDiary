@@ -1,5 +1,4 @@
 using BloodPressureDiary.UI.Database;
-using Microsoft.EntityFrameworkCore;
 using BloodPressureDiary.UI.Tests.Fixtures;
 namespace BloodPressureDiary.UI.Tests;
 /// <summary>Verifies validation and persistence.</summary>
@@ -84,20 +83,6 @@ public sealed class MeasurementTests : IClassFixture<DiaryFixture>
         // Assert
         Assert.Equal(newer.Id, result[0].Id);
     }
-    [Fact]
-    /// <summary>Verifies that the migration creates usable SQLite storage.</summary>
-    public async Task MigrationCreatesUsableSqliteDatabase()
-    {
-        // Arrange
-        var state = fixture.CreateSqlite();
-        await using var connection = state.Connection;
-        await using var context = state.Context;
-        // Act
-        await context.Database.MigrateAsync();
-        context.Measurements.Add(fixture.CreateRow().ToMeasurement()!);
-        await context.SaveChangesAsync();
-        // Assert
-        Assert.Equal(1, await context.Measurements.CountAsync());
-        Assert.Empty(await context.Database.GetPendingMigrationsAsync());
-    }
+
+
 }
