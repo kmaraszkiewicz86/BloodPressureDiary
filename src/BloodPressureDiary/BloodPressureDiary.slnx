@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="BloodPressureDiary.UI.Tests/BloodPressureDiary.UI.Tests.csproj" Id="068c4cff-701d-48eb-b63a-4fdbeb54b805" />
+  <Project Path="BloodPressureDiary.UI/BloodPressureDiary.UI.csproj" />
+</Solution>
