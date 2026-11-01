@@ -1,11 +1,14 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace BloodPressureDiary.UI.Database;
 /// <summary>Stores one manually entered blood pressure measurement.</summary>
-public sealed class Measurement
+[EntityTypeConfiguration(typeof(BloodPressureMeasurementConfiguration))]
+public sealed class BloodPressureMeasurement
 {
     /// <summary>Gets or sets the identifier.</summary>
     public int Id { get; set; }
     /// <summary>Gets or sets the local measurement date and time.</summary>
-    public DateTime RecordedAt { get; set; }
+    public DateTime CreatedDate { get; set; }
     /// <summary>Gets or sets systolic pressure in mmHg.</summary>
     public int Systolic { get; set; }
     /// <summary>Gets or sets diastolic pressure in mmHg.</summary>

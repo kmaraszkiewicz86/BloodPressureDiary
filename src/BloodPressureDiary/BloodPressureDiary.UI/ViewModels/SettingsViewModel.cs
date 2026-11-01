@@ -14,15 +14,26 @@ public sealed class SettingsViewModel : ObservableObject
     /// <summary>Initializes settings and navigation commands.</summary>
     public SettingsViewModel(ISettingsService settings, IReminderService reminders, IDialogService dialogs, INavigationService navigation)
     {
-        this.settings = settings; this.reminders = reminders; this.dialogs = dialogs;
-        enabled = settings.Enabled; time = settings.Time;
+        this.settings = settings;
+        this.reminders = reminders;
+        this.dialogs = dialogs;
+        enabled = settings.Enabled;
+        time = settings.Time;
         SaveCommand = new AsyncRelayCommand(SaveAsync);
         MeasurementsCommand = new AsyncRelayCommand(navigation.ShowMeasurementsAsync);
     }
     /// <summary>Gets or sets whether reminders are enabled.</summary>
-    public bool Enabled { get => enabled; set => SetProperty(ref enabled, value); }
+    public bool Enabled
+    {
+        get => enabled;
+        set => SetProperty(ref enabled, value);
+    }
     /// <summary>Gets or sets the local reminder time.</summary>
-    public TimeSpan Time { get => time; set => SetProperty(ref time, value); }
+    public TimeSpan Time
+    {
+        get => time;
+        set => SetProperty(ref time, value);
+    }
     /// <summary>Gets whether settings can be changed.</summary>
     public bool IsAvailable => !busy;
     /// <summary>Gets the preference save command.</summary>
@@ -31,14 +42,25 @@ public sealed class SettingsViewModel : ObservableObject
     public IAsyncRelayCommand MeasurementsCommand { get; }
     private async Task SaveAsync()
     {
-        busy = true; OnPropertyChanged(nameof(IsAvailable));
+        busy = true;
+        OnPropertyChanged(nameof(IsAvailable));
         try
         {
             if (!await reminders.ConfigureAsync(Enabled, Time))
-            { await dialogs.ShowErrorAsync(AppResources.NotificationDenied); return; }
+            {
+                await dialogs.ShowErrorAsync(AppResources.NotificationDenied);
+                return;
+            }
             settings.Save(Enabled, Time);
         }
-        catch (Exception) { await dialogs.ShowErrorAsync(AppResources.ReminderError); }
-        finally { busy = false; OnPropertyChanged(nameof(IsAvailable)); }
+        catch (Exception)
+        {
+            await dialogs.ShowErrorAsync(AppResources.ReminderError);
+        }
+        finally
+        {
+            busy = false;
+            OnPropertyChanged(nameof(IsAvailable));
+        }
     }
 }

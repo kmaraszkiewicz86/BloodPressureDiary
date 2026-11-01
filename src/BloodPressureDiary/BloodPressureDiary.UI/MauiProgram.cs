@@ -19,7 +19,7 @@ public static class MauiProgram
         });
         builder.Services.AddDbContextFactory<DiaryContext>(options =>
             options.UseSqlite($"Data Source={Path.Combine(FileSystem.AppDataDirectory, "diary.db")}"));
-        builder.Services.AddSingleton<IMeasurementService, MeasurementService>();
+        builder.Services.AddSingleton<IBloodPressureMeasurementService, BloodPressureMeasurementService>();
         builder.Services.AddSingleton<INavigationService, NavigationService>();
         builder.Services.AddSingleton<IDialogService, DialogService>();
         builder.Services.AddSingleton<ISettingsService, SettingsService>();
@@ -32,6 +32,9 @@ public static class MauiProgram
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
-        return builder.Build();
+        var app = builder.Build();
+        using var context = app.Services.GetRequiredService<IDbContextFactory<DiaryContext>>().CreateDbContext();
+        context.Database.Migrate();
+        return app;
     }
 }

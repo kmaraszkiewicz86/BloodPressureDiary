@@ -1,12 +1,12 @@
 using BloodPressureDiary.UI.Database;
 namespace BloodPressureDiary.UI.Interfaces;
-/// <summary>Defines MeasurementService operations.</summary>
-public interface IMeasurementService
+/// <summary>Defines BloodPressureMeasurementService operations.</summary>
+public interface IBloodPressureMeasurementService
 {
     /// <summary>Loads measurements from newest to oldest.</summary>
-    Task<IReadOnlyList<Measurement>> LoadAsync();
+    Task<IReadOnlyList<BloodPressureMeasurement>> LoadAsync();
     /// <summary>Inserts or updates a measurement.</summary>
-    Task SaveAsync(Measurement measurement);
+    Task SaveAsync(BloodPressureMeasurement measurement);
     /// <summary>Deletes a measurement by identifier.</summary>
     Task DeleteAsync(int id);
 }

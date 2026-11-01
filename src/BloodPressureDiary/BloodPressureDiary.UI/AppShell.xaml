@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:loc="clr-namespace:BloodPressureDiary.UI.Resources.Localization" x:Class="BloodPressureDiary.UI.AppShell" Title="{x:Static loc:AppResources.AppTitle}">
- <TabBar>
-  <ShellContent x:Name="MeasurementsTab" Route="measurements" Title="{x:Static loc:AppResources.Measurements}" />
-  <ShellContent x:Name="SettingsTab" Route="settings" Title="{x:Static loc:AppResources.Settings}" />
- </TabBar>
+<Shell x:Class="BloodPressureDiary.UI.AppShell"
+       xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:local="clr-namespace:BloodPressureDiary.UI"
+       xmlns:loc="clr-namespace:BloodPressureDiary.UI.Resources.Localization"
+       Title="{x:Static loc:AppResources.AppTitle}">
+    <TabBar>
+        <ShellContent Route="measurements"
+                      Title="{x:Static loc:AppResources.Measurements}"
+                      ContentTemplate="{DataTemplate local:MainPage}" />
+        <ShellContent Route="settings"
+                      Title="{x:Static loc:AppResources.Settings}"
+                      ContentTemplate="{DataTemplate local:SettingsPage}" />
+    </TabBar>
 </Shell>

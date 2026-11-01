@@ -13,13 +13,23 @@ public sealed class MainViewModelTests : IClassFixture<DiaryFixture>
     public async Task SavePersistsOptionalFieldsAndDate()
     {
         // Arrange
-        var state = fixture.CreateMain(); var input = state.Sut.NewMeasurement;
-        input.Systolic = "125"; input.Diastolic = "85"; input.Pulse = "65"; input.Note = "note";
-        input.Date = new DateTime(2026, 10, 1); input.Time = TimeSpan.FromHours(10);
+        var state = fixture.CreateMain();
+        var input = state.Sut.NewMeasurement;
+        input.Systolic = "125";
+        input.Diastolic = "85";
+        input.Pulse = "65";
+        input.Note = "note";
+        input.Date = new DateTime(2026, 10, 1);
+        input.Time = TimeSpan.FromHours(10);
         // Act
         await state.Sut.SaveCommand.ExecuteAsync(null);
         // Assert
-        await state.Store.Received().SaveAsync(Arg.Is<Measurement>(m => m.Systolic == 125 && m.Diastolic == 85 && m.Pulse == 65 && m.Note == "note" && m.RecordedAt == new DateTime(2026, 10, 1, 10, 0, 0)));
+        await state.Store.Received().SaveAsync(Arg.Is<BloodPressureMeasurement>(measurement =>
+            measurement.Systolic == 125 &&
+            measurement.Diastolic == 85 &&
+            measurement.Pulse == 65 &&
+            measurement.Note == "note" &&
+            measurement.CreatedDate == new DateTime(2026, 10, 1, 10, 0, 0)));
     }
     [Fact]
     /// <summary>Verifies InvalidInputDoesNotSave.</summary>
@@ -30,7 +40,7 @@ public sealed class MainViewModelTests : IClassFixture<DiaryFixture>
         // Act
         await state.Sut.SaveCommand.ExecuteAsync(null);
         // Assert
-        await state.Store.DidNotReceive().SaveAsync(Arg.Any<Measurement>());
+        await state.Store.DidNotReceive().SaveAsync(Arg.Any<BloodPressureMeasurement>());
     }
     [Theory]
     [InlineData(false)]
@@ -39,7 +49,8 @@ public sealed class MainViewModelTests : IClassFixture<DiaryFixture>
     public async Task DeleteRequiresConfirmation(bool confirmed)
     {
         // Arrange
-        var state = fixture.CreateMain(); await state.Sut.LoadCommand.ExecuteAsync(null);
+        var state = fixture.CreateMain();
+        await state.Sut.LoadCommand.ExecuteAsync(null);
         state.Dialogs.ConfirmDeleteAsync().Returns(confirmed);
         // Act
         await state.Sut.DeleteCommand.ExecuteAsync(state.Sut.Rows[0]);
@@ -51,35 +62,46 @@ public sealed class MainViewModelTests : IClassFixture<DiaryFixture>
     public async Task CancelRestoresOriginalValues()
     {
         // Arrange
-        var state = fixture.CreateMain(); await state.Sut.LoadCommand.ExecuteAsync(null);
-        var row = state.Sut.Rows[0]; state.Sut.EditCommand.Execute(row); row.Note = "changed"; row.Systolic = "invalid";
+        var state = fixture.CreateMain();
+        await state.Sut.LoadCommand.ExecuteAsync(null);
+        var row = state.Sut.Rows[0];
+        state.Sut.EditCommand.Execute(row);
+        row.Note = "changed";
+        row.Systolic = "invalid";
         // Act
         state.Sut.CancelCommand.Execute(row);
         // Assert
-        Assert.Equal("original", row.Note); Assert.Equal("120", row.Systolic); Assert.False(row.IsEditing);
+        Assert.Equal("original", row.Note);
+        Assert.Equal("120", row.Systolic);
+        Assert.False(row.IsEditing);
     }
     [Fact]
     /// <summary>Verifies InlineSaveUpdatesExistingIdentifier.</summary>
     public async Task InlineSaveUpdatesExistingIdentifier()
     {
         // Arrange
-        var state = fixture.CreateMain(); await state.Sut.LoadCommand.ExecuteAsync(null);
-        var row = state.Sut.Rows[0]; state.Sut.EditCommand.Execute(row); row.Systolic = "130";
+        var state = fixture.CreateMain();
+        await state.Sut.LoadCommand.ExecuteAsync(null);
+        var row = state.Sut.Rows[0];
+        state.Sut.EditCommand.Execute(row);
+        row.Systolic = "130";
         // Act
         await state.Sut.SaveRowCommand.ExecuteAsync(row);
         // Assert
-        await state.Store.Received().SaveAsync(Arg.Is<Measurement>(m => m.Id == 1 && m.Systolic == 130));
+        await state.Store.Received().SaveAsync(Arg.Is<BloodPressureMeasurement>(m => m.Id == 1 && m.Systolic == 130));
     }
     [Fact]
     /// <summary>Verifies StorageFailureIsReported.</summary>
     public async Task StorageFailureIsReported()
     {
         // Arrange
-        var state = fixture.CreateMain(); state.Store.LoadAsync().Returns(Task.FromException<IReadOnlyList<Measurement>>(new IOException()));
+        var state = fixture.CreateMain();
+        state.Store.LoadAsync().Returns(Task.FromException<IReadOnlyList<BloodPressureMeasurement>>(new IOException()));
         // Act
         await state.Sut.LoadCommand.ExecuteAsync(null);
         // Assert
-        await state.Dialogs.Received().ShowErrorAsync(Arg.Any<string>()); Assert.False(state.Sut.IsBusy);
+        await state.Dialogs.Received().ShowErrorAsync(Arg.Any<string>());
+        Assert.False(state.Sut.IsBusy);
     }
     [Fact]
     /// <summary>Verifies SettingsUsesNavigationInterface.</summary>

@@ -1,10 +1,11 @@
 namespace BloodPressureDiary.UI;
+
 /// <summary>Hosts measurement and settings tabs.</summary>
 public partial class AppShell : Shell
 {
-    /// <summary>Initializes tabs with injected views.</summary>
-    public AppShell(MainPage measurements, SettingsPage settings)
+    /// <summary>Initializes the application shell.</summary>
+    public AppShell()
     {
-        InitializeComponent(); MeasurementsTab.Content = measurements; SettingsTab.Content = settings;
+        InitializeComponent();
     }
 }

@@ -2,11 +2,11 @@ using BloodPressureDiary.UI.Database;
 using BloodPressureDiary.UI.Tests.Fixtures;
 namespace BloodPressureDiary.UI.Tests;
 /// <summary>Verifies validation and persistence.</summary>
-public sealed class MeasurementTests : IClassFixture<DiaryFixture>
+public sealed class BloodPressureMeasurementTests : IClassFixture<DiaryFixture>
 {
     private readonly DiaryFixture fixture;
     /// <summary>Initializes the test fixture.</summary>
-    public MeasurementTests(DiaryFixture fixture) => this.fixture = fixture;
+    public BloodPressureMeasurementTests(DiaryFixture fixture) => this.fixture = fixture;
     [Theory]
     [InlineData("", "80", "")]
     [InlineData("120", "0", "")]
@@ -18,7 +18,10 @@ public sealed class MeasurementTests : IClassFixture<DiaryFixture>
     public void InvalidValuesAreRejected(string systolic, string diastolic, string pulse)
     {
         // Arrange
-        var row = fixture.CreateRow(); row.Systolic = systolic; row.Diastolic = diastolic; row.Pulse = pulse;
+        var row = fixture.CreateRow();
+        row.Systolic = systolic;
+        row.Diastolic = diastolic;
+        row.Pulse = pulse;
         // Act
         var result = row.ToMeasurement();
         // Assert
@@ -33,26 +36,31 @@ public sealed class MeasurementTests : IClassFixture<DiaryFixture>
         // Act
         var result = row.ToMeasurement();
         // Assert
-        Assert.NotNull(result); Assert.Null(result.Pulse);
+        Assert.NotNull(result);
+        Assert.Null(result.Pulse);
     }
     [Fact]
     /// <summary>Verifies StoreInsertsMeasurement.</summary>
     public async Task StoreInsertsMeasurement()
     {
         // Arrange
-        var store = fixture.CreateStore(); var measurement = fixture.CreateRow().ToMeasurement()!;
+        var store = fixture.CreateStore();
+        var measurement = fixture.CreateRow().ToMeasurement()!;
         // Act
         await store.SaveAsync(measurement);
         // Assert
-        var saved = Assert.Single(await store.LoadAsync()); Assert.Equal(120, saved.Systolic);
+        var saved = Assert.Single(await store.LoadAsync());
+        Assert.Equal(120, saved.Systolic);
     }
     [Fact]
     /// <summary>Verifies StoreUpdatesMeasurement.</summary>
     public async Task StoreUpdatesMeasurement()
     {
         // Arrange
-        var store = fixture.CreateStore(); var measurement = fixture.CreateRow().ToMeasurement()!;
-        await store.SaveAsync(measurement); measurement.Note = "updated";
+        var store = fixture.CreateStore();
+        var measurement = fixture.CreateRow().ToMeasurement()!;
+        await store.SaveAsync(measurement);
+        measurement.Note = "updated";
         // Act
         await store.SaveAsync(measurement);
         // Assert
@@ -63,7 +71,8 @@ public sealed class MeasurementTests : IClassFixture<DiaryFixture>
     public async Task StoreDeletesMeasurement()
     {
         // Arrange
-        var store = fixture.CreateStore(); var measurement = fixture.CreateRow().ToMeasurement()!;
+        var store = fixture.CreateStore();
+        var measurement = fixture.CreateRow().ToMeasurement()!;
         await store.SaveAsync(measurement);
         // Act
         await store.DeleteAsync(measurement.Id);
@@ -75,9 +84,12 @@ public sealed class MeasurementTests : IClassFixture<DiaryFixture>
     public async Task StoreOrdersNewestFirst()
     {
         // Arrange
-        var store = fixture.CreateStore(); var older = fixture.CreateRow().ToMeasurement()!;
-        var newer = fixture.CreateRow().ToMeasurement()!; newer.RecordedAt = older.RecordedAt.AddDays(1);
-        await store.SaveAsync(older); await store.SaveAsync(newer);
+        var store = fixture.CreateStore();
+        var older = fixture.CreateRow().ToMeasurement()!;
+        var newer = fixture.CreateRow().ToMeasurement()!;
+        newer.CreatedDate = older.CreatedDate.AddDays(1);
+        await store.SaveAsync(older);
+        await store.SaveAsync(newer);
         // Act
         var result = await store.LoadAsync();
         // Assert

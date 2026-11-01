@@ -7,11 +7,14 @@ public partial class MainPage : ContentPage
     /// <summary>Initializes the measurement view.</summary>
     public MainPage(MainViewModel viewModel)
     {
-        InitializeComponent(); this.viewModel = viewModel; BindingContext = viewModel;
+        InitializeComponent();
+        this.viewModel = viewModel;
+        BindingContext = viewModel;
     }
     /// <summary>Loads measurements when the tab appears.</summary>
     protected override async void OnAppearing()
     {
-        base.OnAppearing(); await viewModel.LoadCommand.ExecuteAsync(null);
+        base.OnAppearing();
+        await viewModel.LoadCommand.ExecuteAsync(null);
     }
 }

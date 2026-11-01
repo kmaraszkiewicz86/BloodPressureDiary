@@ -14,7 +14,9 @@ public sealed class SettingsViewModelTests : IClassFixture<DiaryFixture>
     public async Task PreferencesPersistOnlyWhenSchedulingSucceeds(bool allowed)
     {
         // Arrange
-        var state = fixture.CreateSettings(); state.Sut.Enabled = true; state.Sut.Time = TimeSpan.FromHours(14);
+        var state = fixture.CreateSettings();
+        state.Sut.Enabled = true;
+        state.Sut.Time = TimeSpan.FromHours(14);
         state.Reminders.ConfigureAsync(true, state.Sut.Time).Returns(allowed);
         // Act
         await state.Sut.SaveCommand.ExecuteAsync(null);
@@ -26,12 +28,18 @@ public sealed class SettingsViewModelTests : IClassFixture<DiaryFixture>
     public async Task DisableCancelsReminderBeforeSaving()
     {
         // Arrange
-        var state = fixture.CreateSettings(); state.Sut.Enabled = false; state.Sut.Time = TimeSpan.FromHours(8);
+        var state = fixture.CreateSettings();
+        state.Sut.Enabled = false;
+        state.Sut.Time = TimeSpan.FromHours(8);
         state.Reminders.ConfigureAsync(false, state.Sut.Time).Returns(true);
         // Act
         await state.Sut.SaveCommand.ExecuteAsync(null);
         // Assert
-        Received.InOrder(() => { state.Reminders.ConfigureAsync(false, TimeSpan.FromHours(8)); state.Settings.Save(false, TimeSpan.FromHours(8)); });
+        Received.InOrder(() =>
+        {
+            state.Reminders.ConfigureAsync(false, TimeSpan.FromHours(8));
+            state.Settings.Save(false, TimeSpan.FromHours(8));
+        });
     }
     [Fact]
     /// <summary>Verifies MeasurementsUsesNavigationInterface.</summary>

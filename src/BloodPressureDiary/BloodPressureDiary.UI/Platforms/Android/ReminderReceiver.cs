@@ -13,9 +13,15 @@ public sealed class ReminderReceiver : BroadcastReceiver
     /// <summary>Posts a reminder and schedules the next local occurrence.</summary>
     public override void OnReceive(Context? context, Intent? intent)
     {
-        if (context is null) return;
+        if (context is null)
+        {
+            return;
+        }
         var settings = new SettingsService();
-        if (!settings.Enabled) return;
+        if (!settings.Enabled)
+        {
+            return;
+        }
         if (intent?.Action == "BloodPressureDiary.REMIND")
         {
             var manager = (NotificationManager)context.GetSystemService(Context.NotificationService)!;

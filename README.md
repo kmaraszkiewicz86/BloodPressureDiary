@@ -17,14 +17,17 @@ An Android blood pressure diary with inline measurement editing, daily local rem
 
 ### AppShell
 
-- `AppShell`: Initializes tabs with injected views.
+- `AppShell`: Initializes the application shell.
+
+### BloodPressureMeasurementConfiguration
+
+- `Configure`: Configures the measurement table and its properties.
 
 ### DiaryContext
 
 - `DiaryContext`: Initializes the context with injected options.
-- `OnModelCreating`: Configures the measurement table.
 
-### InitialDiary
+### 202611010001_InitialDiary
 
 - `Up`: Creates diary storage.
 - `Down`: Removes diary storage.
@@ -55,17 +58,17 @@ An Android blood pressure diary with inline measurement editing, daily local rem
 
 - `OnReceive`: Posts a reminder and schedules the next local occurrence.
 
+### BloodPressureMeasurementService
+
+- `BloodPressureMeasurementService`: Initializes the measurement service.
+- `LoadAsync`: Loads measurements from newest to oldest.
+- `SaveAsync`: Inserts or updates a measurement.
+- `DeleteAsync`: Deletes a measurement by identifier.
+
 ### DialogService
 
 - `ConfirmDeleteAsync`: Asks the user to confirm deletion.
 - `ShowErrorAsync`: Displays a localized error message.
-
-### MeasurementService
-
-- `MeasurementService`: Initializes the measurement service.
-- `LoadAsync`: Loads measurements from newest to oldest.
-- `SaveAsync`: Inserts or updates a measurement.
-- `DeleteAsync`: Deletes a measurement by identifier.
 
 ### NavigationService
 
@@ -80,14 +83,14 @@ An Android blood pressure diary with inline measurement editing, daily local rem
 
 - `SettingsPage`: Initializes the settings view.
 
-### MainViewModel
-
-- `MainViewModel`: Initializes diary commands and dependencies.
-
-### MeasurementRowViewModel
+### BloodPressureMeasurementRowViewModel
 
 - `Load`: Copies persisted values into the row.
 - `ToMeasurement`: Validates input and creates a measurement.
+
+### MainViewModel
+
+- `MainViewModel`: Initializes diary commands and dependencies.
 
 ### SettingsViewModel
 
