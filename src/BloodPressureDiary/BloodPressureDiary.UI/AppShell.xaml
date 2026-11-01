@@ -4,11 +4,20 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:BloodPressureDiary.UI"
-    Title="BloodPressureDiary.UI">
+    xmlns:views="clr-namespace:BloodPressureDiary.UI.Views"
+    xmlns:localization="clr-namespace:BloodPressureDiary.UI.Resources.Localization"
+    Title="{x:Static localization:AppResources.AppTitle}">
 
     <ShellContent
-        Title="Home"
+        x:Name="MainTab"
+        Title="{x:Static localization:AppResources.HomeTab}"
         ContentTemplate="{DataTemplate local:MainPage}"
         Route="MainPage" />
+
+    <ShellContent
+        x:Name="SettingsTab"
+        Title="{x:Static localization:AppResources.SettingsTab}"
+        ContentTemplate="{DataTemplate views:SettingsPage}"
+        Route="SettingsPage" />
 
 </Shell>

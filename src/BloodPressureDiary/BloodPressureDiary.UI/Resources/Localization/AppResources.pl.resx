@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="AppTitle" xml:space="preserve"><value>Dzienniczek ciśnienia</value></data>
+  <data name="BloodPressureMeasurementsTab" xml:space="preserve"><value>Pomiary</value></data>
+  <data name="HomeTab" xml:space="preserve"><value>Pomiary</value></data>
+  <data name="SettingsTab" xml:space="preserve"><value>Ustawienia</value></data>
+  <data name="NewBloodPressureMeasurement" xml:space="preserve"><value>Nowy pomiar</value></data>
+  <data name="Systolic" xml:space="preserve"><value>Skurczowe (mmHg)</value></data>
+  <data name="Diastolic" xml:space="preserve"><value>Rozkurczowe (mmHg)</value></data>
+  <data name="Pulse" xml:space="preserve"><value>Puls (uderzeń/min)</value></data>
+  <data name="Notes" xml:space="preserve"><value>Notatka</value></data>
+  <data name="Date" xml:space="preserve"><value>Data</value></data>
+  <data name="Time" xml:space="preserve"><value>Godzina</value></data>
+  <data name="DateAndTime" xml:space="preserve"><value>Data i godzina</value></data>
+  <data name="Save" xml:space="preserve"><value>Zapisz</value></data>
+  <data name="Edit" xml:space="preserve"><value>Edytuj</value></data>
+  <data name="Delete" xml:space="preserve"><value>Usuń</value></data>
+  <data name="Cancel" xml:space="preserve"><value>Anuluj</value></data>
+  <data name="BloodPressureMeasurements" xml:space="preserve"><value>Zapisane pomiary</value></data>
+  <data name="NoBloodPressureMeasurements" xml:space="preserve"><value>Brak zapisanych pomiarów.</value></data>
+  <data name="ExportBackup" xml:space="preserve"><value>Utwórz kopię CSV</value></data>
+  <data name="ExportReport" xml:space="preserve"><value>Utwórz raport HTML</value></data>
+  <data name="ShareBackup" xml:space="preserve"><value>Udostępnij kopię pomiarów</value></data>
+  <data name="ShareReport" xml:space="preserve"><value>Udostępnij raport pomiarów</value></data>
+  <data name="DeleteTitle" xml:space="preserve"><value>Usuń pomiar</value></data>
+  <data name="DeleteConfirmation" xml:space="preserve"><value>Czy chcesz usunąć ten pomiar?</value></data>
+  <data name="ValidationTitle" xml:space="preserve"><value>Sprawdź pomiar</value></data>
+  <data name="RequiredPressure" xml:space="preserve"><value>Wpisz ciśnienie skurczowe i rozkurczowe jako dodatnie liczby całkowite.</value></data>
+  <data name="InvalidPulse" xml:space="preserve"><value>Wpisz puls jako dodatnią liczbę całkowitą albo pozostaw pole puste.</value></data>
+  <data name="SaveFailed" xml:space="preserve"><value>Nie udało się zapisać pomiaru.</value></data>
+  <data name="DeleteFailed" xml:space="preserve"><value>Nie udało się usunąć pomiaru.</value></data>
+  <data name="LoadFailed" xml:space="preserve"><value>Nie udało się wczytać pomiarów.</value></data>
+  <data name="ExportFailed" xml:space="preserve"><value>Nie udało się utworzyć pliku.</value></data>
+  <data name="ReminderTitle" xml:space="preserve"><value>Codzienne przypomnienie o pomiarze</value></data>
+  <data name="DailyReminder" xml:space="preserve"><value>Przypominaj codziennie</value></data>
+  <data name="ReminderTime" xml:space="preserve"><value>Godzina przypomnienia</value></data>
+  <data name="ReminderPermissionDenied" xml:space="preserve"><value>Powiadomienia są zablokowane. Włącz je dla tej aplikacji w ustawieniach Androida.</value></data>
+  <data name="ReminderSaved" xml:space="preserve"><value>Zapisano ustawienia przypomnienia.</value></data>
+  <data name="ReportTitle" xml:space="preserve"><value>Pomiary ciśnienia</value></data>
+  <data name="ReminderNotification" xml:space="preserve"><value>Czas zapisać pomiar ciśnienia.</value></data>
+</root>

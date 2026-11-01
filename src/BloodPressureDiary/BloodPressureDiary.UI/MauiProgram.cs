@@ -1,25 +1,39 @@
-﻿using Microsoft.Extensions.Logging;
+using BloodPressureDiary.UI.Database;
+using BloodPressureDiary.UI.Extensions;
+using BloodPressureDiary.UI.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
-namespace BloodPressureDiary.UI
+namespace BloodPressureDiary.UI;
+
+/// <summary>Configures and builds the MAUI application.</summary>
+public static class MauiProgram
 {
-    public static class MauiProgram
+    /// <summary>Creates the application, registers dependencies, and applies database migrations.</summary>
+    public static MauiApp CreateMauiApp()
     {
-        public static MauiApp CreateMauiApp()
-        {
-            var builder = MauiApp.CreateBuilder();
-            builder
-                .UseMauiApp<App>()
-                .ConfigureFonts(fonts =>
-                {
-                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                    fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-                });
+        var builder = MauiApp.CreateBuilder();
+        builder
+            .UseMauiApp<App>()
+            .ConfigureFonts(fonts =>
+            {
+                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+            });
+
+        builder.Services.AddBloodPressureDiaryServices();
 
 #if DEBUG
-    		builder.Logging.AddDebug();
+        builder.Logging.AddDebug();
 #endif
 
-            return builder.Build();
+        var app = builder.Build();
+        using (var scope = app.Services.CreateScope())
+        {
+            scope.ServiceProvider.GetRequiredService<DiaryDbContext>().Database.Migrate();
         }
+
+        app.Services.GetRequiredService<IReminderService>().RestoreAsync().GetAwaiter().GetResult();
+        return app;
     }
 }

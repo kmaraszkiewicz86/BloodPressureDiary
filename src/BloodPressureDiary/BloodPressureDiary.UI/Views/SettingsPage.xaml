@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:localization="clr-namespace:BloodPressureDiary.UI.Resources.Localization"
+             x:Class="BloodPressureDiary.UI.Views.SettingsPage"
+             Title="{x:Static localization:AppResources.SettingsTab}">
+    <VerticalStackLayout Padding="24" Spacing="18">
+        <Label Text="{x:Static localization:AppResources.ReminderTitle}" FontSize="22" FontAttributes="Bold" />
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+            <Label Text="{x:Static localization:AppResources.DailyReminder}" VerticalOptions="Center" />
+            <Switch Grid.Column="1" IsToggled="{Binding ReminderEnabled}" />
+        </Grid>
+        <VerticalStackLayout Spacing="6">
+            <Label Text="{x:Static localization:AppResources.ReminderTime}" />
+            <TimePicker Time="{Binding ReminderTime}" />
+        </VerticalStackLayout>
+        <Button Text="{x:Static localization:AppResources.Save}" Command="{Binding SaveCommand}" />
+    </VerticalStackLayout>
+</ContentPage>

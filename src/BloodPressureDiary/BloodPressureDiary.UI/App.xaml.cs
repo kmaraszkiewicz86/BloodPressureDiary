@@ -1,17 +1,19 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+namespace BloodPressureDiary.UI;
 
-namespace BloodPressureDiary.UI
+/// <summary>Provides the application window.</summary>
+public partial class App(AppShell _appShell) : Application
 {
-    public partial class App : Application
+    private bool _isInitialized;
+
+    /// <inheritdoc />
+    protected override Window CreateWindow(IActivationState? activationState)
     {
-        public App()
+        if (!_isInitialized)
         {
             InitializeComponent();
+            _isInitialized = true;
         }
 
-        protected override Window CreateWindow(IActivationState? activationState)
-        {
-            return new Window(new AppShell());
-        }
+        return new(_appShell);
     }
 }

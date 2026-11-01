@@ -1,22 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	<TargetFrameworks>net10.0-android</TargetFrameworks>
-	<OutputType Condition="'$(TargetFramework)' != 'net10.0'">Exe</OutputType>
-	<UseMaui Condition="'$(TargetFramework)' != 'net10.0'">true</UseMaui>
+	<TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.60" ExcludeAssets="build;buildTransitive" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Maui.Resizetizer" Version="10.0.60" ExcludeAssets="build;buildTransitive" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Maui.Controls.Build.Tasks" Version="10.0.60" ExcludeAssets="build;buildTransitive" PrivateAssets="all" />
     <PackageReference Include="AutoFixture" Version="4.18.1" />
     <PackageReference Include="AutoFixture.AutoNSubstitute" Version="4.18.1" />
     <PackageReference Include="coverlet.collector" Version="6.0.4" />
     <PackageReference Include="FluentAssertions" Version="8.11.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.*" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.14" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
-    <PackageReference Include="NSubstitute" Version="6.2.0" />
+    <PackageReference Include="NSubstitute" Version="5.3.0" />
     <PackageReference Include="xunit" Version="2.9.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
   </ItemGroup>

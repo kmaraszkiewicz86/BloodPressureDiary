@@ -1,24 +1,14 @@
-﻿namespace BloodPressureDiary.UI
+using BloodPressureDiary.UI.ViewModels;
+
+namespace BloodPressureDiary.UI;
+
+/// <summary>Displays the measurements sheet.</summary>
+public partial class MainPage : ContentPage
 {
-    public partial class MainPage : ContentPage
+    /// <summary>Creates the measurements page.</summary>
+    public MainPage(MainPageViewModel viewModel)
     {
-        int count = 0;
-
-        public MainPage()
-        {
-            InitializeComponent();
-        }
-
-        private void OnCounterClicked(object? sender, EventArgs e)
-        {
-            count++;
-
-            if (count == 1)
-                CounterBtn.Text = $"Clicked {count} time";
-            else
-                CounterBtn.Text = $"Clicked {count} times";
-
-            SemanticScreenReader.Announce(CounterBtn.Text);
-        }
+        InitializeComponent();
+        BindingContext = viewModel;
     }
 }

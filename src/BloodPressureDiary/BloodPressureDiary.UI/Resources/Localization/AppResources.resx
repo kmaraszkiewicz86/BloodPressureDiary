@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+  <data name="AppTitle" xml:space="preserve"><value>Blood Pressure Diary</value></data>
+  <data name="BloodPressureMeasurementsTab" xml:space="preserve"><value>Measurements</value></data>
+  <data name="HomeTab" xml:space="preserve"><value>Home</value></data>
+  <data name="SettingsTab" xml:space="preserve"><value>Settings</value></data>
+  <data name="NewBloodPressureMeasurement" xml:space="preserve"><value>New measurement</value></data>
+  <data name="Systolic" xml:space="preserve"><value>Systolic (mmHg)</value></data>
+  <data name="Diastolic" xml:space="preserve"><value>Diastolic (mmHg)</value></data>
+  <data name="Pulse" xml:space="preserve"><value>Pulse (bpm)</value></data>
+  <data name="Notes" xml:space="preserve"><value>Notes</value></data>
+  <data name="Date" xml:space="preserve"><value>Date</value></data>
+  <data name="Time" xml:space="preserve"><value>Time</value></data>
+  <data name="DateAndTime" xml:space="preserve"><value>Date and time</value></data>
+  <data name="Save" xml:space="preserve"><value>Save</value></data>
+  <data name="Edit" xml:space="preserve"><value>Edit</value></data>
+  <data name="Delete" xml:space="preserve"><value>Delete</value></data>
+  <data name="Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="BloodPressureMeasurements" xml:space="preserve"><value>Saved measurements</value></data>
+  <data name="NoBloodPressureMeasurements" xml:space="preserve"><value>No measurements saved yet.</value></data>
+  <data name="ExportBackup" xml:space="preserve"><value>Export CSV backup</value></data>
+  <data name="ExportReport" xml:space="preserve"><value>Export HTML report</value></data>
+  <data name="ShareBackup" xml:space="preserve"><value>Share blood pressure backup</value></data>
+  <data name="ShareReport" xml:space="preserve"><value>Share blood pressure report</value></data>
+  <data name="DeleteTitle" xml:space="preserve"><value>Delete measurement</value></data>
+  <data name="DeleteConfirmation" xml:space="preserve"><value>Do you want to delete this measurement?</value></data>
+  <data name="ValidationTitle" xml:space="preserve"><value>Check the measurement</value></data>
+  <data name="RequiredPressure" xml:space="preserve"><value>Enter systolic and diastolic pressure as positive whole numbers.</value></data>
+  <data name="InvalidPulse" xml:space="preserve"><value>Enter pulse as a positive whole number or leave it empty.</value></data>
+  <data name="SaveFailed" xml:space="preserve"><value>The measurement could not be saved.</value></data>
+  <data name="DeleteFailed" xml:space="preserve"><value>The measurement could not be deleted.</value></data>
+  <data name="LoadFailed" xml:space="preserve"><value>Measurements could not be loaded.</value></data>
+  <data name="ExportFailed" xml:space="preserve"><value>The file could not be created.</value></data>
+  <data name="ReminderTitle" xml:space="preserve"><value>Daily measurement reminder</value></data>
+  <data name="DailyReminder" xml:space="preserve"><value>Remind me every day</value></data>
+  <data name="ReminderTime" xml:space="preserve"><value>Reminder time</value></data>
+  <data name="ReminderPermissionDenied" xml:space="preserve"><value>Notifications are not allowed. Enable notifications for this app in Android settings.</value></data>
+  <data name="ReminderSaved" xml:space="preserve"><value>Reminder settings saved.</value></data>
+  <data name="ReportTitle" xml:space="preserve"><value>Blood Pressure Measurements</value></data>
+  <data name="ReminderNotification" xml:space="preserve"><value>Time to record your blood pressure measurement.</value></data>
+</root>
