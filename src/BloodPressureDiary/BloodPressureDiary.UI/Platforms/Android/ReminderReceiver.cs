@@ -19,17 +19,19 @@ public sealed class ReminderReceiver : BroadcastReceiver
         if (intent?.Action == "BloodPressureDiary.REMIND")
         {
             var manager = (NotificationManager)context.GetSystemService(Context.NotificationService)!;
-            if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
+            if (OperatingSystem.IsAndroidVersionAtLeast(26))
                 manager.CreateNotificationChannel(new NotificationChannel(ReminderScheduler.Channel, AppResources.ReminderChannel, NotificationImportance.Default));
-            if (NotificationManagerCompat.From(context).AreNotificationsEnabled())
+            if (NotificationManagerCompat.From(context)?.AreNotificationsEnabled() == true)
             {
                 var launch = context.PackageManager!.GetLaunchIntentForPackage(context.PackageName!)!;
-                var pending = PendingIntent.GetActivity(context, 101, launch, PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable);
-                var notification = new NotificationCompat.Builder(context, ReminderScheduler.Channel)
-                    .SetSmallIcon(Android.Resource.Drawable.IcDialogInfo)
-                    .SetContentTitle(AppResources.ReminderTitle).SetContentText(AppResources.ReminderBody)
-                    .SetAutoCancel(true).SetContentIntent(pending).Build();
-                manager.Notify(100, notification);
+                var pending = PendingIntent.GetActivity(context, 101, launch, PendingIntentFlags.UpdateCurrent | (OperatingSystem.IsAndroidVersionAtLeast(23) ? PendingIntentFlags.Immutable : 0));
+                var builder = new NotificationCompat.Builder(context, ReminderScheduler.Channel);
+                builder.SetSmallIcon(Android.Resource.Drawable.IcDialogInfo);
+                builder.SetContentTitle(AppResources.ReminderTitle);
+                builder.SetContentText(AppResources.ReminderBody);
+                builder.SetAutoCancel(true);
+                builder.SetContentIntent(pending);
+                manager.Notify(100, builder.Build());
             }
         }
         ReminderScheduler.Configure(context, true, settings.Time);

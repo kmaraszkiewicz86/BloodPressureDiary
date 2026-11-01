@@ -47,6 +47,10 @@ An Android blood pressure diary with inline measurement editing, daily local rem
 
 - `ConfigureAsync`: Requests notification access and schedules or cancels the daily reminder.
 
+### NotificationPermission
+
+- `NotificationPermission`: Initializes the Android notification permission request.
+
 ### ReminderReceiver
 
 - `OnReceive`: Posts a reminder and schedules the next local occurrence.
