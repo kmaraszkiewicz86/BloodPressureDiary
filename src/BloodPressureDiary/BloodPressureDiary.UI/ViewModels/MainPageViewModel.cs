@@ -51,6 +51,7 @@ public sealed class MainPageViewModel(
     /// <summary>Gets the settings navigation command.</summary>
     public IAsyncRelayCommand OpenSettingsCommand => new AsyncRelayCommand(_navigationService.OpenSettingsAsync);
 
+    /// <summary>Loads saved measurements into the row collection.</summary>
     private async Task LoadAsync()
     {
         try
@@ -69,6 +70,7 @@ public sealed class MainPageViewModel(
         }
     }
 
+    /// <summary>Validates and saves a new measurement, then reloads the rows.</summary>
     private async Task SaveAsync()
     {
         if (!TryReadValues(SystolicInput, DiastolicInput, PulseInput, out var systolic, out var diastolic, out var pulse, out var error))
@@ -96,12 +98,14 @@ public sealed class MainPageViewModel(
         }
     }
 
+    /// <summary>Starts editing the selected measurement row.</summary>
     private static Task EditAsync(BloodPressureMeasurementRowViewModel? row)
     {
         row?.BeginEdit();
         return Task.CompletedTask;
     }
 
+    /// <summary>Validates and saves changes to the selected measurement row.</summary>
     private async Task SaveEditAsync(BloodPressureMeasurementRowViewModel? row)
     {
         if (row is null)
@@ -135,8 +139,10 @@ public sealed class MainPageViewModel(
         }
     }
 
+    /// <summary>Cancels editing the selected measurement row.</summary>
     private static void CancelEdit(BloodPressureMeasurementRowViewModel? row) => row?.CancelEdit();
 
+    /// <summary>Requests confirmation and deletes the selected measurement.</summary>
     private async Task DeleteAsync(BloodPressureMeasurementRowViewModel? row)
     {
         if (row is null || !await _interaction.ConfirmAsync(
@@ -157,6 +163,7 @@ public sealed class MainPageViewModel(
         }
     }
 
+    /// <summary>Creates and shares a CSV backup.</summary>
     private async Task ExportBackupAsync()
     {
         try
@@ -170,6 +177,7 @@ public sealed class MainPageViewModel(
         }
     }
 
+    /// <summary>Creates and shares an HTML report.</summary>
     private async Task ExportReportAsync()
     {
         try
@@ -183,6 +191,7 @@ public sealed class MainPageViewModel(
         }
     }
 
+    /// <summary>Parses and validates pressure and pulse values.</summary>
     private static bool TryReadValues(string systolicText, string diastolicText, string pulseText,
         out int systolic, out int diastolic, out int? pulse, out string error)
     {
@@ -211,6 +220,7 @@ public sealed class MainPageViewModel(
         return true;
     }
 
+    /// <summary>Clears the new measurement inputs and resets the date and time.</summary>
     private void ResetNewBloodPressureMeasurement()
     {
         SystolicInput = string.Empty;
@@ -221,6 +231,7 @@ public sealed class MainPageViewModel(
         MeasuredTime = DateTime.Now.TimeOfDay;
     }
 
+    /// <summary>Sorts the measurement rows by date and identifier in descending order.</summary>
     private void SortBloodPressureMeasurements()
     {
         var sorted = BloodPressureMeasurements.OrderByDescending(row => row.BloodPressureMeasurement.MeasuredAt)

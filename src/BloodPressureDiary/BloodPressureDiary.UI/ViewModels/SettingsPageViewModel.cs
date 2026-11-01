@@ -20,6 +20,7 @@ public sealed class SettingsPageViewModel(
     /// <summary>Gets the measurements navigation command.</summary>
     public IAsyncRelayCommand OpenBloodPressureMeasurementsCommand => new AsyncRelayCommand(_navigationService.OpenBloodPressureMeasurementsAsync);
 
+    /// <summary>Saves the reminder settings and displays the result.</summary>
     private async Task SaveAsync()
     {
         if (!await _reminderService.SetReminderAsync(ReminderEnabled, ReminderTime))

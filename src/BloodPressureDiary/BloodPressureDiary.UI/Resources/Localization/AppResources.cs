@@ -85,5 +85,6 @@ public static class AppResources
     /// <summary>Gets the reminder notification text.</summary>
     public static string ReminderNotification => Get(nameof(ReminderNotification));
 
+    /// <summary>Returns the localized string or the resource name when no translation is found.</summary>
     private static string Get(string name) => _manager.GetString(name, CultureInfo.CurrentUICulture) ?? name;
 }

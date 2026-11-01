@@ -44,6 +44,7 @@ public sealed class AndroidReminderScheduler : IReminderScheduler
     }
 }
 
+/// <summary>Schedules and cancels Android reminder alarms.</summary>
 internal static class DailyReminderAlarm
 {
     private const int _requestCode = 7421;
@@ -75,6 +76,7 @@ internal static class DailyReminderAlarm
         alarmManager?.Cancel(GetPendingIntent(context));
     }
 
+    /// <summary>Creates the pending intent for the daily reminder receiver.</summary>
     private static NativePendingIntent GetPendingIntent(NativeContext context)
     {
         var intent = new NativeIntent(context, typeof(DailyReminderReceiver));

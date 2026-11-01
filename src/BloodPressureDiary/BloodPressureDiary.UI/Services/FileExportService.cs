@@ -58,8 +58,10 @@ public sealed class FileExportService(IBloodPressureMeasurementRepository _repos
         return await WriteAsync("blood-pressure-report", ".html", builder.ToString(), cancellationToken);
     }
 
+    /// <summary>Escapes and quotes a CSV value.</summary>
     private static string Csv(string value) => $"\"{value.Replace("\"", "\"\"", StringComparison.Ordinal)}\"";
 
+    /// <summary>Writes the supplied contents to a cache file and returns its path.</summary>
     private static async Task<string> WriteAsync(string prefix, string extension, string contents, CancellationToken cancellationToken)
     {
         var path = Path.Combine(FileSystem.CacheDirectory, $"{prefix}-{DateTime.Now:yyyyMMdd-HHmmss}{extension}");
