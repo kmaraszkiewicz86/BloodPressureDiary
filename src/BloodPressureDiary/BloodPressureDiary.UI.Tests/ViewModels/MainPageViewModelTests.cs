@@ -7,6 +7,40 @@ namespace BloodPressureDiary.UI.Tests.ViewModels;
 /// <summary>Tests main page measurement entry behavior.</summary>
 public sealed class MainPageViewModelTests(MainPageViewModelFixture fixture) : IClassFixture<MainPageViewModelFixture>
 {
+    /// <summary>Opens the new measurement form.</summary>
+    [Fact]
+    public void AddNewItemCommand_OpensForm()
+    {
+        // Arrange
+        fixture.Reset();
+
+        // Act
+        fixture.Sut.AddNewItemCommand.Execute(null);
+
+        // Assert
+        Assert.True(fixture.Sut.IsAddingBloodPressureMeasurement);
+    }
+
+    /// <summary>Closes the new measurement form and clears the entered values.</summary>
+    [Fact]
+    public void CancelNewItemCommand_ClosesFormAndClearsInputs()
+    {
+        // Arrange
+        fixture.Reset();
+        fixture.Sut.AddNewItemCommand.Execute(null);
+        fixture.EnterValidBloodPressureMeasurement();
+
+        // Act
+        fixture.Sut.CancelNewItemCommand.Execute(null);
+
+        // Assert
+        Assert.False(fixture.Sut.IsAddingBloodPressureMeasurement);
+        Assert.Empty(fixture.Sut.SystolicInput);
+        Assert.Empty(fixture.Sut.DiastolicInput);
+        Assert.Empty(fixture.Sut.PulseInput);
+        Assert.Empty(fixture.Sut.NotesInput);
+    }
+
     /// <summary>Saves a valid measurement and refreshes the list.</summary>
     [Fact]
     public async Task SaveCommand_StoresValidBloodPressureMeasurement()
@@ -15,6 +49,7 @@ public sealed class MainPageViewModelTests(MainPageViewModelFixture fixture) : I
         fixture.Reset();
         fixture.Repository.GetAllAsync(Arg.Any<DateTime?>(), Arg.Any<DateTime?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<IReadOnlyList<BloodPressureMeasurement>>([]));
+        fixture.Sut.AddNewItemCommand.Execute(null);
         fixture.EnterValidBloodPressureMeasurement();
 
         // Act
@@ -24,6 +59,7 @@ public sealed class MainPageViewModelTests(MainPageViewModelFixture fixture) : I
         await fixture.Repository.Received(1).AddAsync(Arg.Is<BloodPressureMeasurement>(bloodPressureMeasurement =>
             bloodPressureMeasurement.Systolic == 120 && bloodPressureMeasurement.Diastolic == 80 && bloodPressureMeasurement.Pulse == 65 && bloodPressureMeasurement.Notes == "Morning"),
             Arg.Any<CancellationToken>());
+        Assert.False(fixture.Sut.IsAddingBloodPressureMeasurement);
     }
 
     /// <summary>Shows validation and does not save when a required pressure is invalid.</summary>
@@ -32,6 +68,7 @@ public sealed class MainPageViewModelTests(MainPageViewModelFixture fixture) : I
     {
         // Arrange
         fixture.Reset();
+        fixture.Sut.AddNewItemCommand.Execute(null);
         fixture.Sut.SystolicInput = "0";
         fixture.Sut.DiastolicInput = "80";
 
@@ -41,6 +78,7 @@ public sealed class MainPageViewModelTests(MainPageViewModelFixture fixture) : I
         // Assert
         await fixture.Repository.DidNotReceive().AddAsync(Arg.Any<BloodPressureMeasurement>(), Arg.Any<CancellationToken>());
         await fixture.Interaction.Received(1).ShowMessageAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>());
+        Assert.True(fixture.Sut.IsAddingBloodPressureMeasurement);
     }
 
     /// <summary>Loads the selected history date range from the repository.</summary>

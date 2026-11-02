@@ -38,6 +38,8 @@ public sealed class MainPageViewModel(
     public bool HasPreviousPage { get; private set => SetProperty(ref field, value); }
     /// <summary>Gets whether the next page is available.</summary>
     public bool HasNextPage { get; private set => SetProperty(ref field, value); }
+    /// <summary>Gets whether the new measurement form is visible.</summary>
+    public bool IsAddingBloodPressureMeasurement { get; private set => SetProperty(ref field, value); }
     /// <summary>Gets or sets the new systolic value.</summary>
     public string SystolicInput { get; set => SetProperty(ref field, value); } = string.Empty;
     /// <summary>Gets or sets the new diastolic value.</summary>
@@ -52,6 +54,10 @@ public sealed class MainPageViewModel(
     public TimeSpan MeasuredTime { get; set => SetProperty(ref field, value); } = DateTime.Now.TimeOfDay;
     /// <summary>Gets the save measurement command.</summary>
     public IAsyncRelayCommand SaveCommand => new AsyncRelayCommand(SaveAsync);
+    /// <summary>Gets the open new measurement form command.</summary>
+    public IRelayCommand AddNewItemCommand => new RelayCommand(OpenNewBloodPressureMeasurement);
+    /// <summary>Gets the cancel new measurement command.</summary>
+    public IRelayCommand CancelNewItemCommand => new RelayCommand(CancelNewBloodPressureMeasurement);
     /// <summary>Gets the refresh measurements command.</summary>
     public IAsyncRelayCommand LoadCommand => new AsyncRelayCommand(LoadAsync);
     /// <summary>Gets the history filter change command.</summary>
@@ -127,6 +133,20 @@ public sealed class MainPageViewModel(
         await LoadAsync();
     }
 
+    /// <summary>Opens the form for a new measurement.</summary>
+    private void OpenNewBloodPressureMeasurement()
+    {
+        ResetNewBloodPressureMeasurement();
+        IsAddingBloodPressureMeasurement = true;
+    }
+
+    /// <summary>Closes the new measurement form and clears its inputs.</summary>
+    private void CancelNewBloodPressureMeasurement()
+    {
+        IsAddingBloodPressureMeasurement = false;
+        ResetNewBloodPressureMeasurement();
+    }
+
     /// <summary>Validates and saves a new measurement, then reloads the rows.</summary>
     private async Task SaveAsync()
     {
@@ -147,6 +167,7 @@ public sealed class MainPageViewModel(
                 MeasuredAt = MeasuredDate.Date.Add(MeasuredTime)
             });
             ResetNewBloodPressureMeasurement();
+            IsAddingBloodPressureMeasurement = false;
             await LoadAsync();
         }
         catch

@@ -9,6 +9,7 @@
   <data name="HomeTab" xml:space="preserve"><value>Pomiary</value></data>
   <data name="SettingsTab" xml:space="preserve"><value>Ustawienia</value></data>
   <data name="NewBloodPressureMeasurement" xml:space="preserve"><value>Nowy pomiar</value></data>
+  <data name="AddNewItem" xml:space="preserve"><value>Dodaj pomiar</value></data>
   <data name="Systolic" xml:space="preserve"><value>Skurczowe (mmHg)</value></data>
   <data name="Diastolic" xml:space="preserve"><value>Rozkurczowe (mmHg)</value></data>
   <data name="Pulse" xml:space="preserve"><value>Puls (uderzeń/min)</value></data>

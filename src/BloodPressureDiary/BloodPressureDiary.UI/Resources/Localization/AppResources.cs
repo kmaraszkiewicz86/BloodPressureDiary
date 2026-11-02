@@ -18,6 +18,8 @@ public static class AppResources
     public static string SettingsTab => Get(nameof(SettingsTab));
     /// <summary>Gets the new measurement heading.</summary>
     public static string NewBloodPressureMeasurement => Get(nameof(NewBloodPressureMeasurement));
+    /// <summary>Gets the add measurement action label.</summary>
+    public static string AddNewItem => Get(nameof(AddNewItem));
     /// <summary>Gets the systolic pressure label.</summary>
     public static string Systolic => Get(nameof(Systolic));
     /// <summary>Gets the diastolic pressure label.</summary>

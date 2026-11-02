@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:localization="clr-namespace:BloodPressureDiary.UI.Resources.Localization"
              xmlns:viewModels="clr-namespace:BloodPressureDiary.UI.ViewModels"
+             xmlns:views="clr-namespace:BloodPressureDiary.UI.Views"
              xmlns:behaviors="clr-namespace:Kmaraszkiewicz86.Maui.Behaviors;assembly=Kmaraszkiewicz86.Maui.Behaviors"
              x:Class="BloodPressureDiary.UI.MainPage"
              Title="{x:Static localization:AppResources.BloodPressureMeasurementsTab}">
@@ -10,236 +11,212 @@
         <behaviors:EventToCommandBehavior EventName="Appearing" Command="{Binding LoadCommand}" />
     </ContentPage.Behaviors>
 
-    <ScrollView>
-        <VerticalStackLayout Padding="16" Spacing="14">
-            <Label Text="{x:Static localization:AppResources.NewBloodPressureMeasurement}" FontSize="22" FontAttributes="Bold" />
+    <Grid>
+        <ScrollView>
+            <VerticalStackLayout Padding="16" Spacing="14">
+                <Button Text="{x:Static localization:AppResources.AddNewItem}" Command="{Binding AddNewItemCommand}" />
 
-            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="12" RowSpacing="8">
-                <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="4">
-                    <Label Text="{x:Static localization:AppResources.Systolic}" />
-                    <Entry Text="{Binding SystolicInput}" Keyboard="Numeric" />
-                </VerticalStackLayout>
-                <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="4">
-                    <Label Text="{x:Static localization:AppResources.Diastolic}" />
-                    <Entry Text="{Binding DiastolicInput}" Keyboard="Numeric" />
-                </VerticalStackLayout>
-                <VerticalStackLayout Grid.Row="1" Grid.Column="0" Spacing="4">
-                    <Label Text="{x:Static localization:AppResources.Pulse}" />
-                    <Entry Text="{Binding PulseInput}" Keyboard="Numeric" />
-                </VerticalStackLayout>
-                <VerticalStackLayout Grid.Row="1" Grid.Column="1" Spacing="4">
-                    <Label Text="{x:Static localization:AppResources.Date}" />
-                    <DatePicker Date="{Binding MeasuredDate}" />
-                </VerticalStackLayout>
-                <VerticalStackLayout Grid.Row="2" Grid.Column="0" Spacing="4">
-                    <Label Text="{x:Static localization:AppResources.Time}" />
-                    <TimePicker Time="{Binding MeasuredTime}" />
-                </VerticalStackLayout>
-                <VerticalStackLayout Grid.Row="2" Grid.Column="1" Spacing="4">
-                    <Label Text="{x:Static localization:AppResources.Notes}" />
-                    <Entry Text="{Binding NotesInput}" />
-                </VerticalStackLayout>
-            </Grid>
-            <Button Text="{x:Static localization:AppResources.Save}" Command="{Binding SaveCommand}" />
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="8">
+                    <Button Grid.Column="0" Text="{x:Static localization:AppResources.ExportBackup}" Command="{Binding ExportBackupCommand}" />
+                    <Button Grid.Column="1" Text="{x:Static localization:AppResources.ImportBackup}" Command="{Binding ImportBackupCommand}" />
+                    <Button Grid.Row="1" Grid.ColumnSpan="2" Text="{x:Static localization:AppResources.ExportReport}" Command="{Binding ExportReportCommand}" />
+                </Grid>
 
-            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="8">
-                <Button Grid.Column="0" Text="{x:Static localization:AppResources.ExportBackup}" Command="{Binding ExportBackupCommand}" />
-                <Button Grid.Column="1" Text="{x:Static localization:AppResources.ImportBackup}" Command="{Binding ImportBackupCommand}" />
-                <Button Grid.Row="1" Grid.ColumnSpan="2" Text="{x:Static localization:AppResources.ExportReport}" Command="{Binding ExportReportCommand}" />
-            </Grid>
+                <Label Text="{x:Static localization:AppResources.BloodPressureMeasurements}" FontSize="22" FontAttributes="Bold" />
+                <Picker x:Name="HistoryPicker"
+                        Title="{x:Static localization:AppResources.HistoryFilter}"
+                        ItemsSource="{Binding HistoryFilters}"
+                        SelectedIndex="{Binding SelectedHistoryFilter}">
+                    <Picker.Behaviors>
+                        <behaviors:EventToCommandBehavior EventName="SelectedIndexChanged"
+                                                           Command="{Binding FilterHistoryCommand}"
+                                                           CommandParameter="{Binding Source={x:Reference HistoryPicker}, Path=SelectedIndex}" />
+                    </Picker.Behaviors>
+                </Picker>
+                <Label Text="{x:Static localization:AppResources.NoBloodPressureMeasurements}" IsVisible="{Binding IsEmpty}" />
 
-            <Label Text="{x:Static localization:AppResources.BloodPressureMeasurements}" FontSize="22" FontAttributes="Bold" />
-            <Picker x:Name="HistoryPicker"
-                    Title="{x:Static localization:AppResources.HistoryFilter}"
-                    ItemsSource="{Binding HistoryFilters}"
-                    SelectedIndex="{Binding SelectedHistoryFilter}">
-                <Picker.Behaviors>
-                    <behaviors:EventToCommandBehavior EventName="SelectedIndexChanged"
-                                                       Command="{Binding FilterHistoryCommand}"
-                                                       CommandParameter="{Binding Source={x:Reference HistoryPicker}, Path=SelectedIndex}" />
-                </Picker.Behaviors>
-            </Picker>
-            <Label Text="{x:Static localization:AppResources.NoBloodPressureMeasurements}" IsVisible="{Binding IsEmpty}" />
+                <CollectionView
+                    ItemsSource="{Binding BloodPressureMeasurements}"
+                    SelectionMode="None"
+                    VerticalOptions="Fill">
 
-            <CollectionView
-                ItemsSource="{Binding BloodPressureMeasurements}"
-                SelectionMode="None"
-                VerticalOptions="Fill">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="viewModels:BloodPressureMeasurementRowViewModel">
 
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="viewModels:BloodPressureMeasurementRowViewModel">
+                            <Border
+                                Margin="8,4"
+                                Padding="12"
+                                Stroke="{AppThemeBinding Light=#D6DCE4, Dark=#6E6E6E}"
+                                StrokeThickness="1"
+                                BackgroundColor="{AppThemeBinding Light=White, Dark=#303030}">
 
-                        <Border
-                            Margin="8,4"
-                            Padding="12"
-                            Stroke="{AppThemeBinding Light=#D6DCE4, Dark=#6E6E6E}"
-                            StrokeThickness="1"
-                            BackgroundColor="{AppThemeBinding Light=White, Dark=#303030}">
+                                <VerticalStackLayout Spacing="12">
 
-                            <VerticalStackLayout Spacing="12">
-
-                                <!-- Date and time -->
-                                <Label
-                                    Text="{Binding DisplayDateTime, StringFormat='{0:dd-MM-yyyy HH:mm}'}"
-                                    FontAttributes="Bold"
-                                    FontSize="16"
-                                    IsVisible="{Binding IsNotEditing}" />
-
-                                <Grid
-                                    ColumnDefinitions="*,*"
-                                    ColumnSpacing="8"
-                                    IsVisible="{Binding IsEditing}">
-
-                                    <DatePicker
-                                        Grid.Column="0"
-                                        Date="{Binding MeasuredDate}" />
-
-                                    <TimePicker
-                                        Grid.Column="1"
-                                        Time="{Binding MeasuredTime}" />
-                                </Grid>
-
-                                <!-- Measurement values -->
-                                <Grid
-                                    ColumnDefinitions="*,*,*"
-                                    ColumnSpacing="8">
-
-                                    <!-- Systolic -->
-                                    <VerticalStackLayout
-                                        Grid.Column="0"
-                                        Spacing="4">
-
-                                        <Label
-                                            Text="{x:Static localization:AppResources.Systolic}"
-                                            FontSize="12"
-                                            HorizontalTextAlignment="Center" />
-
-                                        <Label
-                                            Text="{Binding BloodPressureMeasurement.Systolic}"
-                                            FontSize="22"
-                                            FontAttributes="Bold"
-                                            HorizontalTextAlignment="Center"
-                                            IsVisible="{Binding IsNotEditing}" />
-
-                                        <Entry
-                                            Text="{Binding SystolicInput}"
-                                            Keyboard="Numeric"
-                                            HorizontalTextAlignment="Center"
-                                            IsVisible="{Binding IsEditing}" />
-                                    </VerticalStackLayout>
-
-                                    <!-- Diastolic -->
-                                    <VerticalStackLayout
-                                        Grid.Column="1"
-                                        Spacing="4">
-
-                                        <Label
-                                            Text="{x:Static localization:AppResources.Diastolic}"
-                                            FontSize="12"
-                                            HorizontalTextAlignment="Center" />
-
-                                        <Label
-                                            Text="{Binding BloodPressureMeasurement.Diastolic}"
-                                            FontSize="22"
-                                            FontAttributes="Bold"
-                                            HorizontalTextAlignment="Center"
-                                            IsVisible="{Binding IsNotEditing}" />
-
-                                        <Entry
-                                            Text="{Binding DiastolicInput}"
-                                            Keyboard="Numeric"
-                                            HorizontalTextAlignment="Center"
-                                            IsVisible="{Binding IsEditing}" />
-                                    </VerticalStackLayout>
-
-                                    <!-- Pulse -->
-                                    <VerticalStackLayout
-                                        Grid.Column="2"
-                                        Spacing="4">
-
-                                        <Label
-                                            Text="{x:Static localization:AppResources.Pulse}"
-                                            FontSize="12"
-                                            HorizontalTextAlignment="Center" />
-
-                                        <Label
-                                            Text="{Binding PulseDisplay}"
-                                            FontSize="22"
-                                            FontAttributes="Bold"
-                                            HorizontalTextAlignment="Center"
-                                            IsVisible="{Binding IsNotEditing}" />
-
-                                        <Entry
-                                            Text="{Binding PulseInput}"
-                                            Keyboard="Numeric"
-                                            HorizontalTextAlignment="Center"
-                                            IsVisible="{Binding IsEditing}" />
-                                    </VerticalStackLayout>
-                                </Grid>
-
-                                <!-- Notes -->
-                                <VerticalStackLayout Spacing="4">
+                                    <!-- Date and time -->
                                     <Label
-                                        Text="{x:Static localization:AppResources.Notes}"
-                                        FontSize="12"
-                                        FontAttributes="Bold" />
-
-                                    <Label
-                                        Text="{Binding NotesDisplay}"
-                                        FontSize="13"
-                                        LineBreakMode="WordWrap"
+                                        Text="{Binding DisplayDateTime, StringFormat='{0:dd-MM-yyyy HH:mm}'}"
+                                        FontAttributes="Bold"
+                                        FontSize="16"
                                         IsVisible="{Binding IsNotEditing}" />
 
-                                    <Entry
-                                        Text="{Binding NotesInput}"
-                                        IsVisible="{Binding IsEditing}" />
+                                    <Grid
+                                        ColumnDefinitions="*,*"
+                                        ColumnSpacing="8"
+                                        IsVisible="{Binding IsEditing}">
+
+                                        <DatePicker
+                                            Grid.Column="0"
+                                            Date="{Binding MeasuredDate}" />
+
+                                        <TimePicker
+                                            Grid.Column="1"
+                                            Time="{Binding MeasuredTime}" />
+                                    </Grid>
+
+                                    <!-- Measurement values -->
+                                    <Grid
+                                        ColumnDefinitions="*,*,*"
+                                        ColumnSpacing="8">
+
+                                        <!-- Systolic -->
+                                        <VerticalStackLayout
+                                            Grid.Column="0"
+                                            Spacing="4">
+
+                                            <Label
+                                                Text="{x:Static localization:AppResources.Systolic}"
+                                                FontSize="12"
+                                                HorizontalTextAlignment="Center" />
+
+                                            <Label
+                                                Text="{Binding BloodPressureMeasurement.Systolic}"
+                                                FontSize="22"
+                                                FontAttributes="Bold"
+                                                HorizontalTextAlignment="Center"
+                                                IsVisible="{Binding IsNotEditing}" />
+
+                                            <Entry
+                                                Text="{Binding SystolicInput}"
+                                                Keyboard="Numeric"
+                                                HorizontalTextAlignment="Center"
+                                                IsVisible="{Binding IsEditing}" />
+                                        </VerticalStackLayout>
+
+                                        <!-- Diastolic -->
+                                        <VerticalStackLayout
+                                            Grid.Column="1"
+                                            Spacing="4">
+
+                                            <Label
+                                                Text="{x:Static localization:AppResources.Diastolic}"
+                                                FontSize="12"
+                                                HorizontalTextAlignment="Center" />
+
+                                            <Label
+                                                Text="{Binding BloodPressureMeasurement.Diastolic}"
+                                                FontSize="22"
+                                                FontAttributes="Bold"
+                                                HorizontalTextAlignment="Center"
+                                                IsVisible="{Binding IsNotEditing}" />
+
+                                            <Entry
+                                                Text="{Binding DiastolicInput}"
+                                                Keyboard="Numeric"
+                                                HorizontalTextAlignment="Center"
+                                                IsVisible="{Binding IsEditing}" />
+                                        </VerticalStackLayout>
+
+                                        <!-- Pulse -->
+                                        <VerticalStackLayout
+                                            Grid.Column="2"
+                                            Spacing="4">
+
+                                            <Label
+                                                Text="{x:Static localization:AppResources.Pulse}"
+                                                FontSize="12"
+                                                HorizontalTextAlignment="Center" />
+
+                                            <Label
+                                                Text="{Binding PulseDisplay}"
+                                                FontSize="22"
+                                                FontAttributes="Bold"
+                                                HorizontalTextAlignment="Center"
+                                                IsVisible="{Binding IsNotEditing}" />
+
+                                            <Entry
+                                                Text="{Binding PulseInput}"
+                                                Keyboard="Numeric"
+                                                HorizontalTextAlignment="Center"
+                                                IsVisible="{Binding IsEditing}" />
+                                        </VerticalStackLayout>
+                                    </Grid>
+
+                                    <!-- Notes -->
+                                    <VerticalStackLayout Spacing="4">
+                                        <Label
+                                            Text="{x:Static localization:AppResources.Notes}"
+                                            FontSize="12"
+                                            FontAttributes="Bold" />
+
+                                        <Label
+                                            Text="{Binding NotesDisplay}"
+                                            FontSize="13"
+                                            LineBreakMode="WordWrap"
+                                            IsVisible="{Binding IsNotEditing}" />
+
+                                        <Entry
+                                            Text="{Binding NotesInput}"
+                                            IsVisible="{Binding IsEditing}" />
+                                    </VerticalStackLayout>
+
+                                    <!-- Actions -->
+                                    <HorizontalStackLayout
+                                        Spacing="8"
+                                        HorizontalOptions="End"
+                                        IsVisible="{Binding IsNotEditing}">
+
+                                        <Button
+                                            Text="{x:Static localization:AppResources.Edit}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditCommand}"
+                                            CommandParameter="{Binding .}" />
+
+                                        <Button
+                                            Text="{x:Static localization:AppResources.Delete}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteCommand}"
+                                            CommandParameter="{Binding .}" />
+                                    </HorizontalStackLayout>
+
+                                    <HorizontalStackLayout
+                                        Spacing="8"
+                                        HorizontalOptions="End"
+                                        IsVisible="{Binding IsEditing}">
+
+                                        <Button
+                                            Text="{x:Static localization:AppResources.Save}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SaveEditCommand}"
+                                            CommandParameter="{Binding .}" />
+
+                                        <Button
+                                            Text="{x:Static localization:AppResources.Cancel}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.CancelEditCommand}"
+                                            CommandParameter="{Binding .}" />
+                                    </HorizontalStackLayout>
+
                                 </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
 
-                                <!-- Actions -->
-                                <HorizontalStackLayout
-                                    Spacing="8"
-                                    HorizontalOptions="End"
-                                    IsVisible="{Binding IsNotEditing}">
+                <Grid ColumnDefinitions="*,Auto,*" ColumnSpacing="8">
+                    <Button Grid.Column="0" Text="{x:Static localization:AppResources.PreviousPage}" Command="{Binding PreviousPageCommand}" IsEnabled="{Binding HasPreviousPage}" />
+                    <Label Grid.Column="1" Text="{Binding PageText}" VerticalOptions="Center" />
+                    <Button Grid.Column="2" Text="{x:Static localization:AppResources.NextPage}" Command="{Binding NextPageCommand}" IsEnabled="{Binding HasNextPage}" />
+                </Grid>
 
-                                    <Button
-                                        Text="{x:Static localization:AppResources.Edit}"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditCommand}"
-                                        CommandParameter="{Binding .}" />
+            </VerticalStackLayout>
+        </ScrollView>
 
-                                    <Button
-                                        Text="{x:Static localization:AppResources.Delete}"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteCommand}"
-                                        CommandParameter="{Binding .}" />
-                                </HorizontalStackLayout>
-
-                                <HorizontalStackLayout
-                                    Spacing="8"
-                                    HorizontalOptions="End"
-                                    IsVisible="{Binding IsEditing}">
-
-                                    <Button
-                                        Text="{x:Static localization:AppResources.Save}"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SaveEditCommand}"
-                                        CommandParameter="{Binding .}" />
-
-                                    <Button
-                                        Text="{x:Static localization:AppResources.Cancel}"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.CancelEditCommand}"
-                                        CommandParameter="{Binding .}" />
-                                </HorizontalStackLayout>
-
-                            </VerticalStackLayout>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-
-            <Grid ColumnDefinitions="*,Auto,*" ColumnSpacing="8">
-                <Button Grid.Column="0" Text="{x:Static localization:AppResources.PreviousPage}" Command="{Binding PreviousPageCommand}" IsEnabled="{Binding HasPreviousPage}" />
-                <Label Grid.Column="1" Text="{Binding PageText}" VerticalOptions="Center" />
-                <Button Grid.Column="2" Text="{x:Static localization:AppResources.NextPage}" Command="{Binding NextPageCommand}" IsEnabled="{Binding HasNextPage}" />
-            </Grid>
-
-        </VerticalStackLayout>
-    </ScrollView>
+        <views:NewBloodPressureMeasurementView IsVisible="{Binding IsAddingBloodPressureMeasurement}" />
+    </Grid>
 </ContentPage>

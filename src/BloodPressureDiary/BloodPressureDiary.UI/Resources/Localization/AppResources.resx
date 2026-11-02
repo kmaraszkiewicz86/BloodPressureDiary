@@ -9,6 +9,7 @@
   <data name="HomeTab" xml:space="preserve"><value>Home</value></data>
   <data name="SettingsTab" xml:space="preserve"><value>Settings</value></data>
   <data name="NewBloodPressureMeasurement" xml:space="preserve"><value>New measurement</value></data>
+  <data name="AddNewItem" xml:space="preserve"><value>Add measurement</value></data>
   <data name="Systolic" xml:space="preserve"><value>Systolic (mmHg)</value></data>
   <data name="Diastolic" xml:space="preserve"><value>Diastolic (mmHg)</value></data>
   <data name="Pulse" xml:space="preserve"><value>Pulse (bpm)</value></data>

@@ -5,6 +5,7 @@ BloodPressureDiary is a .NET MAUI application for recording blood pressure measu
 ## Views
 
 - `MainPage` — Displays the measurements sheet.
+- `NewBloodPressureMeasurementView` — Displays the form for a new blood pressure measurement.
 - `SettingsPage` — Displays reminder settings.
 - `AppShell` — Defines the application's measurements and settings tabs.
 
@@ -58,6 +59,7 @@ Manages measurements, history filters, pagination, and file operations.
 - `PageText` — Gets the current page and total page count.
 - `HasPreviousPage` — Gets whether the previous page is available.
 - `HasNextPage` — Gets whether the next page is available.
+- `IsAddingBloodPressureMeasurement` — Gets whether the new measurement form is visible.
 - `SystolicInput` — Gets or sets the new systolic value.
 - `DiastolicInput` — Gets or sets the new diastolic value.
 - `PulseInput` — Gets or sets the optional new pulse value.
@@ -65,6 +67,8 @@ Manages measurements, history filters, pagination, and file operations.
 - `MeasuredDate` — Gets or sets the new measurement date.
 - `MeasuredTime` — Gets or sets the new measurement time.
 - `SaveCommand` — Gets the save measurement command.
+- `AddNewItemCommand` — Gets the open new measurement form command.
+- `CancelNewItemCommand` — Gets the cancel new measurement command.
 - `LoadCommand` — Gets the refresh measurements command.
 - `FilterHistoryCommand` — Gets the history filter change command.
 - `EditCommand` — Gets the inline edit command.
@@ -79,6 +83,8 @@ Manages measurements, history filters, pagination, and file operations.
 - `NextPageCommand` — Gets the next history page command.
 - `LoadAsync()` (private) — Loads saved measurements into the row collection.
 - `FilterHistoryAsync()` (private) — Resets pagination and reloads measurements for the selected history filter.
+- `OpenNewBloodPressureMeasurement()` (private) — Opens the form for a new measurement.
+- `CancelNewBloodPressureMeasurement()` (private) — Closes the new measurement form and clears its inputs.
 - `SaveAsync()` (private) — Validates and saves a new measurement, then reloads the rows.
 - `EditAsync()` (private) — Starts editing the selected measurement row.
 - `SaveEditAsync()` (private) — Validates and saves changes to the selected measurement row.
@@ -209,6 +215,7 @@ Provides localized application strings.
 - `HomeTab` — Gets the home tab title.
 - `SettingsTab` — Gets the settings tab title.
 - `NewBloodPressureMeasurement` — Gets the new measurement heading.
+- `AddNewItem` — Gets the add measurement action label.
 - `Systolic` — Gets the systolic pressure label.
 - `Diastolic` — Gets the diastolic pressure label.
 - `Pulse` — Gets the pulse label.
