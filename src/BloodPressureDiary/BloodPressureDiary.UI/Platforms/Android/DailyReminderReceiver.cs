@@ -4,8 +4,11 @@ using NativeNotificationManager = global::Android.App.NotificationManager;
 using NativeNotification = global::Android.App.Notification;
 using NativeNotificationChannel = global::Android.App.NotificationChannel;
 using NativeNotificationImportance = global::Android.App.NotificationImportance;
+using NativePendingIntent = global::Android.App.PendingIntent;
+using NativePendingIntentFlags = global::Android.App.PendingIntentFlags;
 using NativeContext = global::Android.Content.Context;
 using NativeIntent = global::Android.Content.Intent;
+using NativeActivityFlags = global::Android.Content.ActivityFlags;
 using NativeReceiver = global::Android.Content.BroadcastReceiver;
 
 namespace BloodPressureDiary.UI.Platforms.Android;
@@ -42,10 +45,22 @@ public sealed class DailyReminderReceiver : NativeReceiver
             builder = new NativeNotification.Builder(context);
         }
 
+        var launchIntent = new NativeIntent(context, typeof(MainActivity));
+        launchIntent.SetAction(NativeIntent.ActionMain);
+        launchIntent.AddCategory(NativeIntent.CategoryLauncher);
+        launchIntent.SetFlags(NativeActivityFlags.NewTask | NativeActivityFlags.SingleTop);
+        var pendingIntentFlags = NativePendingIntentFlags.UpdateCurrent;
+        if (OperatingSystem.IsAndroidVersionAtLeast(23))
+        {
+            pendingIntentFlags |= NativePendingIntentFlags.Immutable;
+        }
+
+        var pendingIntent = NativePendingIntent.GetActivity(context, 0, launchIntent, pendingIntentFlags);
         var notification = builder
             .SetContentTitle(AppResources.ReminderTitle)
             .SetContentText(AppResources.ReminderNotification)
             .SetSmallIcon(Resource.Mipmap.appicon)
+            .SetContentIntent(pendingIntent)
             .SetAutoCancel(true)
             .Build();
         manager.Notify(7421, notification);

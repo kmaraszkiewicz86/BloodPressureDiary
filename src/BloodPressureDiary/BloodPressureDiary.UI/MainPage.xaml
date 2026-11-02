@@ -42,12 +42,23 @@
             </Grid>
             <Button Text="{x:Static localization:AppResources.Save}" Command="{Binding SaveCommand}" />
 
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="8">
                 <Button Grid.Column="0" Text="{x:Static localization:AppResources.ExportBackup}" Command="{Binding ExportBackupCommand}" />
-                <Button Grid.Column="1" Text="{x:Static localization:AppResources.ExportReport}" Command="{Binding ExportReportCommand}" />
+                <Button Grid.Column="1" Text="{x:Static localization:AppResources.ImportBackup}" Command="{Binding ImportBackupCommand}" />
+                <Button Grid.Row="1" Grid.ColumnSpan="2" Text="{x:Static localization:AppResources.ExportReport}" Command="{Binding ExportReportCommand}" />
             </Grid>
 
             <Label Text="{x:Static localization:AppResources.BloodPressureMeasurements}" FontSize="22" FontAttributes="Bold" />
+            <Picker x:Name="HistoryPicker"
+                    Title="{x:Static localization:AppResources.HistoryFilter}"
+                    ItemsSource="{Binding HistoryFilters}"
+                    SelectedIndex="{Binding SelectedHistoryFilter}">
+                <Picker.Behaviors>
+                    <behaviors:EventToCommandBehavior EventName="SelectedIndexChanged"
+                                                       Command="{Binding FilterHistoryCommand}"
+                                                       CommandParameter="{Binding Source={x:Reference HistoryPicker}, Path=SelectedIndex}" />
+                </Picker.Behaviors>
+            </Picker>
             <Label Text="{x:Static localization:AppResources.NoBloodPressureMeasurements}" IsVisible="{Binding IsEmpty}" />
 
             <CollectionView
@@ -222,6 +233,12 @@
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
+
+            <Grid ColumnDefinitions="*,Auto,*" ColumnSpacing="8">
+                <Button Grid.Column="0" Text="{x:Static localization:AppResources.PreviousPage}" Command="{Binding PreviousPageCommand}" IsEnabled="{Binding HasPreviousPage}" />
+                <Label Grid.Column="1" Text="{Binding PageText}" VerticalOptions="Center" />
+                <Button Grid.Column="2" Text="{x:Static localization:AppResources.NextPage}" Command="{Binding NextPageCommand}" IsEnabled="{Binding HasNextPage}" />
+            </Grid>
 
         </VerticalStackLayout>
     </ScrollView>

@@ -8,7 +8,7 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace BloodPressureDiary.UI.ViewModels;
 
-/// <summary>Manages measurement entry, editing, deletion, and file exports.</summary>
+/// <summary>Manages measurements, history filters, pagination, and file operations.</summary>
 public sealed class MainPageViewModel(
     IBloodPressureMeasurementRepository _repository,
     IUserInteractionService _interaction,
@@ -16,10 +16,28 @@ public sealed class MainPageViewModel(
     IFileSharingService _sharingService,
     INavigationService _navigationService) : ObservableObject
 {
-    /// <summary>Gets saved measurements in descending date order.</summary>
+    private const int PageSize = 10;
+    private IReadOnlyList<BloodPressureMeasurement> _filteredBloodPressureMeasurements = [];
+    private int _currentPage = 1;
+
+    /// <summary>Gets the current page of measurements in descending date order.</summary>
     public ObservableCollection<BloodPressureMeasurementRowViewModel> BloodPressureMeasurements { get; } = [];
     /// <summary>Gets whether no measurements are currently available.</summary>
     public bool IsEmpty => BloodPressureMeasurements.Count == 0;
+    /// <summary>Gets the available history filters.</summary>
+    public IReadOnlyList<string> HistoryFilters => [AppResources.AllMeasurements, AppResources.Today, AppResources.LastWeek, AppResources.LastMonth];
+    /// <summary>Gets or sets the selected history filter.</summary>
+    public int SelectedHistoryFilter
+    {
+        get;
+        set => SetProperty(ref field, value);
+    }
+    /// <summary>Gets the current page and total page count.</summary>
+    public string PageText { get; private set => SetProperty(ref field, value); } = string.Empty;
+    /// <summary>Gets whether the previous page is available.</summary>
+    public bool HasPreviousPage { get; private set => SetProperty(ref field, value); }
+    /// <summary>Gets whether the next page is available.</summary>
+    public bool HasNextPage { get; private set => SetProperty(ref field, value); }
     /// <summary>Gets or sets the new systolic value.</summary>
     public string SystolicInput { get; set => SetProperty(ref field, value); } = string.Empty;
     /// <summary>Gets or sets the new diastolic value.</summary>
@@ -36,6 +54,8 @@ public sealed class MainPageViewModel(
     public IAsyncRelayCommand SaveCommand => new AsyncRelayCommand(SaveAsync);
     /// <summary>Gets the refresh measurements command.</summary>
     public IAsyncRelayCommand LoadCommand => new AsyncRelayCommand(LoadAsync);
+    /// <summary>Gets the history filter change command.</summary>
+    public IAsyncRelayCommand<int> FilterHistoryCommand => new AsyncRelayCommand<int>(FilterHistoryAsync);
     /// <summary>Gets the inline edit command.</summary>
     public IAsyncRelayCommand<BloodPressureMeasurementRowViewModel?> EditCommand => new AsyncRelayCommand<BloodPressureMeasurementRowViewModel?>(EditAsync);
     /// <summary>Gets the inline edit save command.</summary>
@@ -46,28 +66,65 @@ public sealed class MainPageViewModel(
     public IAsyncRelayCommand<BloodPressureMeasurementRowViewModel?> DeleteCommand => new AsyncRelayCommand<BloodPressureMeasurementRowViewModel?>(DeleteAsync);
     /// <summary>Gets the CSV backup command.</summary>
     public IAsyncRelayCommand ExportBackupCommand => new AsyncRelayCommand(ExportBackupAsync);
+    /// <summary>Gets the CSV backup import command.</summary>
+    public IAsyncRelayCommand ImportBackupCommand => new AsyncRelayCommand(ImportBackupAsync);
     /// <summary>Gets the HTML report command.</summary>
     public IAsyncRelayCommand ExportReportCommand => new AsyncRelayCommand(ExportReportAsync);
     /// <summary>Gets the settings navigation command.</summary>
     public IAsyncRelayCommand OpenSettingsCommand => new AsyncRelayCommand(_navigationService.OpenSettingsAsync);
+    /// <summary>Gets the previous history page command.</summary>
+    public IRelayCommand PreviousPageCommand => new RelayCommand(() =>
+    {
+        if (HasPreviousPage)
+        {
+            _currentPage--;
+            UpdatePage();
+        }
+    });
+    /// <summary>Gets the next history page command.</summary>
+    public IRelayCommand NextPageCommand => new RelayCommand(() =>
+    {
+        if (HasNextPage)
+        {
+            _currentPage++;
+            UpdatePage();
+        }
+    });
 
     /// <summary>Loads saved measurements into the row collection.</summary>
     private async Task LoadAsync()
     {
         try
         {
-            var records = await _repository.GetAllAsync();
-            BloodPressureMeasurements.Clear();
-            foreach (var record in records)
+            var today = DateTime.Today;
+            DateTime? startDate = SelectedHistoryFilter switch
             {
-                BloodPressureMeasurements.Add(new BloodPressureMeasurementRowViewModel(record));
-            }
-            OnPropertyChanged(nameof(IsEmpty));
+                1 => today,
+                2 => today.AddDays(-6),
+                3 => today.AddMonths(-1),
+                _ => null
+            };
+            var endDate = startDate.HasValue ? today.AddDays(1) : (DateTime?)null;
+            _filteredBloodPressureMeasurements = await _repository.GetAllAsync(startDate, endDate);
+            UpdatePage();
         }
         catch
         {
             await _interaction.ShowMessageAsync(AppResources.AppTitle, AppResources.LoadFailed, AppResources.Cancel);
         }
+    }
+
+    /// <summary>Resets pagination and reloads measurements for the selected history filter.</summary>
+    private async Task FilterHistoryAsync(int filter)
+    {
+        if (filter < 0)
+        {
+            return;
+        }
+
+        SelectedHistoryFilter = filter;
+        _currentPage = 1;
+        await LoadAsync();
     }
 
     /// <summary>Validates and saves a new measurement, then reloads the rows.</summary>
@@ -131,7 +188,7 @@ public sealed class MainPageViewModel(
                 MeasuredAt = row.MeasuredDate.Date.Add(row.MeasuredTime)
             });
             row.ApplyEdit(systolic, diastolic, pulse);
-            SortBloodPressureMeasurements();
+            await LoadAsync();
         }
         catch
         {
@@ -154,8 +211,7 @@ public sealed class MainPageViewModel(
         try
         {
             await _repository.DeleteAsync(row.BloodPressureMeasurement.Id);
-            BloodPressureMeasurements.Remove(row);
-            OnPropertyChanged(nameof(IsEmpty));
+            await LoadAsync();
         }
         catch
         {
@@ -174,6 +230,24 @@ public sealed class MainPageViewModel(
         catch
         {
             await _interaction.ShowMessageAsync(AppResources.AppTitle, AppResources.ExportFailed, AppResources.Cancel);
+        }
+    }
+
+    /// <summary>Imports a selected CSV backup and refreshes the history.</summary>
+    private async Task ImportBackupAsync()
+    {
+        try
+        {
+            if (await _exportService.ImportBackupAsync())
+            {
+                _currentPage = 1;
+                await LoadAsync();
+                await _interaction.ShowMessageAsync(AppResources.AppTitle, AppResources.ImportSucceeded, AppResources.Cancel);
+            }
+        }
+        catch
+        {
+            await _interaction.ShowMessageAsync(AppResources.AppTitle, AppResources.ImportFailed, AppResources.Cancel);
         }
     }
 
@@ -231,15 +305,21 @@ public sealed class MainPageViewModel(
         MeasuredTime = DateTime.Now.TimeOfDay;
     }
 
-    /// <summary>Sorts the measurement rows by date and identifier in descending order.</summary>
-    private void SortBloodPressureMeasurements()
+    /// <summary>Displays the current page of filtered measurements.</summary>
+    private void UpdatePage()
     {
-        var sorted = BloodPressureMeasurements.OrderByDescending(row => row.BloodPressureMeasurement.MeasuredAt)
-            .ThenByDescending(row => row.BloodPressureMeasurement.Id).ToArray();
+        var totalPages = Math.Max(1, (_filteredBloodPressureMeasurements.Count + PageSize - 1) / PageSize);
+        _currentPage = Math.Clamp(_currentPage, 1, totalPages);
         BloodPressureMeasurements.Clear();
-        foreach (var row in sorted)
+        var startIndex = (_currentPage - 1) * PageSize;
+        var endIndex = Math.Min(startIndex + PageSize, _filteredBloodPressureMeasurements.Count);
+        for (var index = startIndex; index < endIndex; index++)
         {
-            BloodPressureMeasurements.Add(row);
+            BloodPressureMeasurements.Add(new BloodPressureMeasurementRowViewModel(_filteredBloodPressureMeasurements[index]));
         }
+        HasPreviousPage = _currentPage > 1;
+        HasNextPage = _currentPage < totalPages;
+        PageText = string.Format(CultureInfo.CurrentCulture, AppResources.PageNumber, _currentPage, totalPages);
+        OnPropertyChanged(nameof(IsEmpty));
     }
 }

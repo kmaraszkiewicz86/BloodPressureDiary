@@ -20,6 +20,8 @@ public static class ServiceCollectionExtensions
             services.AddDbContext<DiaryDbContext>(options => options.UseSqlite($"Data Source={databasePath}"));
             services.AddTransient<IBloodPressureMeasurementRepository, BloodPressureMeasurementRepository>();
             services.AddTransient<IFileExportService, FileExportService>();
+            services.AddSingleton<IFilePicker>(FilePicker.Default);
+            services.AddSingleton<IFileSystem>(FileSystem.Current);
             services.AddTransient<IFileSharingService, FileSharingService>();
             services.AddSingleton<INavigationService, NavigationService>();
             services.AddSingleton<IUserInteractionService, UserInteractionService>();

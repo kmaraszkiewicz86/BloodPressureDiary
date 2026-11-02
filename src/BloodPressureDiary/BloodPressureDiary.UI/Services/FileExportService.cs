@@ -1,13 +1,15 @@
 using System.Globalization;
 using System.Net;
 using System.Text;
+using BloodPressureDiary.UI.Database;
 using BloodPressureDiary.UI.Interfaces;
 using BloodPressureDiary.UI.Resources.Localization;
+using Microsoft.VisualBasic.FileIO;
 
 namespace BloodPressureDiary.UI.Services;
 
-/// <summary>Exports stored measurements to CSV and HTML files in the app cache.</summary>
-public sealed class FileExportService(IBloodPressureMeasurementRepository _repository) : IFileExportService
+/// <summary>Exports measurements to CSV and HTML files and imports CSV backups.</summary>
+public sealed class FileExportService(IBloodPressureMeasurementRepository _repository, IFilePicker _filePicker, IFileSystem _fileSystem) : IFileExportService
 {
     /// <inheritdoc />
     public async Task<string> CreateBackupAsync(CancellationToken cancellationToken = default)
@@ -26,6 +28,58 @@ public sealed class FileExportService(IBloodPressureMeasurementRepository _repos
         }
 
         return await WriteAsync("blood-pressure-backup", ".csv", builder.ToString(), cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public async Task<bool> ImportBackupAsync(CancellationToken cancellationToken = default)
+    {
+        var file = await _filePicker.PickAsync(new PickOptions { PickerTitle = AppResources.ImportBackup });
+        if (file is null)
+        {
+            return false;
+        }
+
+        await using var stream = await file.OpenReadAsync();
+        using var parser = new TextFieldParser(stream, Encoding.UTF8) { TextFieldType = FieldType.Delimited, HasFieldsEnclosedInQuotes = true, TrimWhiteSpace = false };
+        parser.SetDelimiters(",");
+        var header = parser.ReadFields();
+        if (header is null || !header.SequenceEqual(new[] { "MeasuredAt", "Systolic", "Diastolic", "Pulse", "Notes" }))
+        {
+            throw new FormatException("Invalid backup header.");
+        }
+
+        var measurements = new List<BloodPressureMeasurement>();
+        while (!parser.EndOfData)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var values = parser.ReadFields();
+            if (values is null || values.Length != 5
+                || !DateTime.TryParseExact(values[0], "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var measuredAt)
+                || !int.TryParse(values[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out var systolic) || systolic <= 0
+                || !int.TryParse(values[2], NumberStyles.Integer, CultureInfo.InvariantCulture, out var diastolic) || diastolic <= 0)
+            {
+                throw new FormatException("Invalid backup measurement.");
+            }
+
+            int? pulse = null;
+            if (!string.IsNullOrEmpty(values[3]))
+            {
+                if (!int.TryParse(values[3], NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsedPulse) || parsedPulse <= 0)
+                {
+                    throw new FormatException("Invalid backup pulse.");
+                }
+                pulse = parsedPulse;
+            }
+
+            measurements.Add(new BloodPressureMeasurement
+            {
+                MeasuredAt = measuredAt, Systolic = systolic, Diastolic = diastolic,
+                Pulse = pulse, Notes = string.IsNullOrEmpty(values[4]) ? null : values[4]
+            });
+        }
+
+        await _repository.AddRangeAsync(measurements, cancellationToken);
+        return true;
     }
 
     /// <inheritdoc />
@@ -62,9 +116,9 @@ public sealed class FileExportService(IBloodPressureMeasurementRepository _repos
     private static string Csv(string value) => $"\"{value.Replace("\"", "\"\"", StringComparison.Ordinal)}\"";
 
     /// <summary>Writes the supplied contents to a cache file and returns its path.</summary>
-    private static async Task<string> WriteAsync(string prefix, string extension, string contents, CancellationToken cancellationToken)
+    private async Task<string> WriteAsync(string prefix, string extension, string contents, CancellationToken cancellationToken)
     {
-        var path = Path.Combine(FileSystem.CacheDirectory, $"{prefix}-{DateTime.Now:yyyyMMdd-HHmmss}{extension}");
+        var path = Path.Combine(_fileSystem.CacheDirectory, $"{prefix}-{DateTime.Now:yyyyMMdd-HHmmss}{extension}");
         await File.WriteAllTextAsync(path, contents, new UTF8Encoding(true), cancellationToken);
         return path;
     }

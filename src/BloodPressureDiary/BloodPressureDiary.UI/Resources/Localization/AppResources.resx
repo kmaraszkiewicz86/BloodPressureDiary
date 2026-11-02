@@ -21,8 +21,19 @@
   <data name="Delete" xml:space="preserve"><value>Delete</value></data>
   <data name="Cancel" xml:space="preserve"><value>Cancel</value></data>
   <data name="BloodPressureMeasurements" xml:space="preserve"><value>Saved measurements</value></data>
-  <data name="NoBloodPressureMeasurements" xml:space="preserve"><value>No measurements saved yet.</value></data>
+  <data name="NoBloodPressureMeasurements" xml:space="preserve"><value>No measurements in the selected period.</value></data>
   <data name="ExportBackup" xml:space="preserve"><value>Export CSV backup</value></data>
+  <data name="ImportBackup" xml:space="preserve"><value>Import CSV backup</value></data>
+  <data name="ImportSucceeded" xml:space="preserve"><value>Backup imported successfully.</value></data>
+  <data name="ImportFailed" xml:space="preserve"><value>The backup could not be imported. Check that it is a valid CSV backup.</value></data>
+  <data name="HistoryFilter" xml:space="preserve"><value>History period</value></data>
+  <data name="AllMeasurements" xml:space="preserve"><value>All</value></data>
+  <data name="Today" xml:space="preserve"><value>Today</value></data>
+  <data name="LastWeek" xml:space="preserve"><value>Last 7 days</value></data>
+  <data name="LastMonth" xml:space="preserve"><value>Last month</value></data>
+  <data name="PreviousPage" xml:space="preserve"><value>Previous</value></data>
+  <data name="NextPage" xml:space="preserve"><value>Next</value></data>
+  <data name="PageNumber" xml:space="preserve"><value>Page {0} / {1}</value></data>
   <data name="ExportReport" xml:space="preserve"><value>Export HTML report</value></data>
   <data name="ShareBackup" xml:space="preserve"><value>Share blood pressure backup</value></data>
   <data name="ShareReport" xml:space="preserve"><value>Share blood pressure report</value></data>

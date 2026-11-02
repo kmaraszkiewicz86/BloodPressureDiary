@@ -46,6 +46,28 @@ public static class AppResources
     public static string NoBloodPressureMeasurements => Get(nameof(NoBloodPressureMeasurements));
     /// <summary>Gets the CSV export label.</summary>
     public static string ExportBackup => Get(nameof(ExportBackup));
+    /// <summary>Gets the CSV import label.</summary>
+    public static string ImportBackup => Get(nameof(ImportBackup));
+    /// <summary>Gets the import success message.</summary>
+    public static string ImportSucceeded => Get(nameof(ImportSucceeded));
+    /// <summary>Gets the import failure message.</summary>
+    public static string ImportFailed => Get(nameof(ImportFailed));
+    /// <summary>Gets the history filter label.</summary>
+    public static string HistoryFilter => Get(nameof(HistoryFilter));
+    /// <summary>Gets the all measurements filter label.</summary>
+    public static string AllMeasurements => Get(nameof(AllMeasurements));
+    /// <summary>Gets the today filter label.</summary>
+    public static string Today => Get(nameof(Today));
+    /// <summary>Gets the last week filter label.</summary>
+    public static string LastWeek => Get(nameof(LastWeek));
+    /// <summary>Gets the last month filter label.</summary>
+    public static string LastMonth => Get(nameof(LastMonth));
+    /// <summary>Gets the previous page action label.</summary>
+    public static string PreviousPage => Get(nameof(PreviousPage));
+    /// <summary>Gets the next page action label.</summary>
+    public static string NextPage => Get(nameof(NextPage));
+    /// <summary>Gets the page number format.</summary>
+    public static string PageNumber => Get(nameof(PageNumber));
     /// <summary>Gets the HTML report label.</summary>
     public static string ExportReport => Get(nameof(ExportReport));
     /// <summary>Gets the backup share title.</summary>

@@ -8,8 +8,14 @@ public interface IBloodPressureMeasurementRepository
     /// <summary>Returns measurements ordered from newest to oldest.</summary>
     Task<IReadOnlyList<BloodPressureMeasurement>> GetAllAsync(CancellationToken cancellationToken = default);
 
+    /// <summary>Returns measurements within the specified date range ordered from newest to oldest.</summary>
+    Task<IReadOnlyList<BloodPressureMeasurement>> GetAllAsync(DateTime? startDate, DateTime? endDate, CancellationToken cancellationToken = default);
+
     /// <summary>Adds a measurement.</summary>
     Task AddAsync(BloodPressureMeasurement bloodPressureMeasurement, CancellationToken cancellationToken = default);
+
+    /// <summary>Adds a collection of measurements.</summary>
+    Task AddRangeAsync(IReadOnlyList<BloodPressureMeasurement> bloodPressureMeasurements, CancellationToken cancellationToken = default);
 
     /// <summary>Updates a measurement.</summary>
     Task UpdateAsync(BloodPressureMeasurement bloodPressureMeasurement, CancellationToken cancellationToken = default);

@@ -49,10 +49,15 @@ Configures the SQLite mapping for blood pressure measurements.
 
 ### `MainPageViewModel`
 
-Manages measurement entry, editing, deletion, and file exports.
+Manages measurements, history filters, pagination, and file operations.
 
-- `BloodPressureMeasurements` — Gets saved measurements in descending date order.
+- `BloodPressureMeasurements` — Gets the current page of measurements in descending date order.
 - `IsEmpty` — Gets whether no measurements are currently available.
+- `HistoryFilters` — Gets the available history filters.
+- `SelectedHistoryFilter` — Gets or sets the selected history filter.
+- `PageText` — Gets the current page and total page count.
+- `HasPreviousPage` — Gets whether the previous page is available.
+- `HasNextPage` — Gets whether the next page is available.
 - `SystolicInput` — Gets or sets the new systolic value.
 - `DiastolicInput` — Gets or sets the new diastolic value.
 - `PulseInput` — Gets or sets the optional new pulse value.
@@ -61,24 +66,30 @@ Manages measurement entry, editing, deletion, and file exports.
 - `MeasuredTime` — Gets or sets the new measurement time.
 - `SaveCommand` — Gets the save measurement command.
 - `LoadCommand` — Gets the refresh measurements command.
+- `FilterHistoryCommand` — Gets the history filter change command.
 - `EditCommand` — Gets the inline edit command.
 - `SaveEditCommand` — Gets the inline edit save command.
 - `CancelEditCommand` — Gets the inline edit cancel command.
 - `DeleteCommand` — Gets the delete command.
 - `ExportBackupCommand` — Gets the CSV backup command.
+- `ImportBackupCommand` — Gets the CSV backup import command.
 - `ExportReportCommand` — Gets the HTML report command.
 - `OpenSettingsCommand` — Gets the settings navigation command.
+- `PreviousPageCommand` — Gets the previous history page command.
+- `NextPageCommand` — Gets the next history page command.
 - `LoadAsync()` (private) — Loads saved measurements into the row collection.
+- `FilterHistoryAsync()` (private) — Resets pagination and reloads measurements for the selected history filter.
 - `SaveAsync()` (private) — Validates and saves a new measurement, then reloads the rows.
 - `EditAsync()` (private) — Starts editing the selected measurement row.
 - `SaveEditAsync()` (private) — Validates and saves changes to the selected measurement row.
 - `CancelEdit()` (private) — Cancels editing the selected measurement row.
 - `DeleteAsync()` (private) — Requests confirmation and deletes the selected measurement.
 - `ExportBackupAsync()` (private) — Creates and shares a CSV backup.
+- `ImportBackupAsync()` (private) — Imports a selected CSV backup and refreshes the history.
 - `ExportReportAsync()` (private) — Creates and shares an HTML report.
 - `TryReadValues()` (private) — Parses and validates pressure and pulse values.
 - `ResetNewBloodPressureMeasurement()` (private) — Clears the new measurement inputs and resets the date and time.
-- `SortBloodPressureMeasurements()` (private) — Sorts the measurement rows by date and identifier in descending order.
+- `UpdatePage()` (private) — Displays the current page of filtered measurements.
 
 ### `BloodPressureMeasurementRowViewModel`
 
@@ -116,15 +127,18 @@ Manages the daily measurement reminder settings.
 Implements measurement storage with Entity Framework Core.
 
 - `GetAllAsync()` — Returns measurements ordered from newest to oldest.
+- `GetAllAsync(startDate, endDate)` — Returns measurements within the specified date range ordered from newest to oldest.
 - `AddAsync()` — Adds a measurement.
+- `AddRangeAsync()` — Adds a collection of measurements.
 - `UpdateAsync()` — Updates a measurement.
 - `DeleteAsync()` — Removes a measurement by identifier.
 
 ### `FileExportService`
 
-Exports stored measurements to CSV and HTML files in the app cache.
+Exports measurements to CSV and HTML files and imports CSV backups.
 
 - `CreateBackupAsync()` — Creates a CSV backup and returns its path.
+- `ImportBackupAsync()` — Imports measurements from a selected CSV backup and returns whether a file was selected.
 - `CreateReportAsync()` — Creates an HTML report and returns its path.
 - `Csv()` (private) — Escapes and quotes a CSV value.
 - `WriteAsync()` (private) — Writes the supplied contents to a cache file and returns its path.
@@ -209,6 +223,17 @@ Provides localized application strings.
 - `BloodPressureMeasurements` — Gets the saved measurements heading.
 - `NoBloodPressureMeasurements` — Gets the empty measurements message.
 - `ExportBackup` — Gets the CSV export label.
+- `ImportBackup` — Gets the CSV import label.
+- `ImportSucceeded` — Gets the import success message.
+- `ImportFailed` — Gets the import failure message.
+- `HistoryFilter` — Gets the history filter label.
+- `AllMeasurements` — Gets the all measurements filter label.
+- `Today` — Gets the today filter label.
+- `LastWeek` — Gets the last week filter label.
+- `LastMonth` — Gets the last month filter label.
+- `PreviousPage` — Gets the previous page action label.
+- `NextPage` — Gets the next page action label.
+- `PageNumber` — Gets the page number format.
 - `ExportReport` — Gets the HTML report label.
 - `ShareBackup` — Gets the backup share title.
 - `ShareReport` — Gets the report share title.

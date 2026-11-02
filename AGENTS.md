@@ -3,6 +3,7 @@
 All paths are relative to the repository root.
 
 - Work in the existing project at `src/BloodPressureDiary/BloodPressureDiary.UI`. Keep one production .NET MAUI project without DDD.
+- When a block contains two or more statements, place each statement on a separate line and format the block across multiple lines.
 - Keep the entire application UI in `src/BloodPressureDiary/BloodPressureDiary.UI/MainPage.xaml`. Do not add other pages or view XAML files; preserve MAUI infrastructure files such as `App.xaml`.
 - Place ViewModels in `ViewModels`, services in `Services`, interfaces in `Interfaces`, and EF Core code in `Database`.
 - Use constructor dependency injection and service interfaces. Register dependencies in `MauiProgram`.
