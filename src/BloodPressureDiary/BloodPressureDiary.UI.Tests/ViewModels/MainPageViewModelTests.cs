@@ -1,4 +1,5 @@
 using BloodPressureDiary.UI.Database;
+using BloodPressureDiary.UI.Resources.Localization;
 using BloodPressureDiary.UI.Tests.Fixtures;
 using NSubstitute;
 
@@ -9,13 +10,13 @@ public sealed class MainPageViewModelTests(MainPageViewModelFixture fixture) : I
 {
     /// <summary>Opens the new measurement form.</summary>
     [Fact]
-    public void AddNewItemCommand_OpensForm()
+    public void AddBloodPressureMeasurementCommand_OpensForm()
     {
         // Arrange
         fixture.Reset();
 
         // Act
-        fixture.Sut.AddNewItemCommand.Execute(null);
+        fixture.Sut.AddBloodPressureMeasurementCommand.Execute(null);
 
         // Assert
         Assert.True(fixture.Sut.IsAddingBloodPressureMeasurement);
@@ -27,7 +28,7 @@ public sealed class MainPageViewModelTests(MainPageViewModelFixture fixture) : I
     {
         // Arrange
         fixture.Reset();
-        fixture.Sut.AddNewItemCommand.Execute(null);
+        fixture.Sut.AddBloodPressureMeasurementCommand.Execute(null);
         fixture.EnterValidBloodPressureMeasurement();
 
         // Act
@@ -49,7 +50,7 @@ public sealed class MainPageViewModelTests(MainPageViewModelFixture fixture) : I
         fixture.Reset();
         fixture.Repository.GetAllAsync(Arg.Any<DateTime?>(), Arg.Any<DateTime?>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<IReadOnlyList<BloodPressureMeasurement>>([]));
-        fixture.Sut.AddNewItemCommand.Execute(null);
+        fixture.Sut.AddBloodPressureMeasurementCommand.Execute(null);
         fixture.EnterValidBloodPressureMeasurement();
 
         // Act
@@ -68,7 +69,7 @@ public sealed class MainPageViewModelTests(MainPageViewModelFixture fixture) : I
     {
         // Arrange
         fixture.Reset();
-        fixture.Sut.AddNewItemCommand.Execute(null);
+        fixture.Sut.AddBloodPressureMeasurementCommand.Execute(null);
         fixture.Sut.SystolicInput = "0";
         fixture.Sut.DiastolicInput = "80";
 
@@ -105,6 +106,123 @@ public sealed class MainPageViewModelTests(MainPageViewModelFixture fixture) : I
 
         // Assert
         await fixture.Repository.Received(1).GetAllAsync(expectedStart, expectedEnd, Arg.Any<CancellationToken>());
+    }
+
+    /// <summary>Combines a custom history range with the selected period.</summary>
+    [Fact]
+    public async Task ApplyHistoryDateRangeCommand_CombinesDateRangeAndPeriod()
+    {
+        // Arrange
+        fixture.Reset();
+        fixture.Sut.SelectedHistoryFilter = 2;
+        fixture.Sut.UseHistoryDateRange = true;
+        fixture.Sut.HistoryStartDate = DateTime.Today.AddDays(-20);
+        fixture.Sut.HistoryEndDate = DateTime.Today.AddDays(-2);
+
+        // Act
+        await fixture.Sut.ApplyHistoryDateRangeCommand.ExecuteAsync(null);
+
+        // Assert
+        await fixture.Repository.Received(1).GetAllAsync(DateTime.Today.AddDays(-6), DateTime.Today.AddDays(-1), Arg.Any<CancellationToken>());
+    }
+
+    /// <summary>Rejects a future date in the history range.</summary>
+    [Fact]
+    public async Task ApplyHistoryDateRangeCommand_FutureDate_ShowsValidation()
+    {
+        // Arrange
+        fixture.Reset();
+        fixture.Sut.UseHistoryDateRange = true;
+        fixture.Sut.HistoryEndDate = DateTime.Today.AddDays(1);
+
+        // Act
+        await fixture.Sut.ApplyHistoryDateRangeCommand.ExecuteAsync(null);
+
+        // Assert
+        await fixture.Interaction.Received(1).ShowMessageAsync(AppResources.ValidationTitle, AppResources.InvalidDateRange, AppResources.Cancel);
+        await fixture.Repository.DidNotReceive().GetAllAsync(Arg.Any<DateTime?>(), Arg.Any<DateTime?>(), Arg.Any<CancellationToken>());
+    }
+
+    /// <summary>Rejects a history range whose start is after its end.</summary>
+    [Fact]
+    public async Task ApplyHistoryDateRangeCommand_ReversedRange_ShowsValidation()
+    {
+        // Arrange
+        fixture.Reset();
+        fixture.Sut.UseHistoryDateRange = true;
+        fixture.Sut.HistoryStartDate = DateTime.Today;
+        fixture.Sut.HistoryEndDate = DateTime.Today.AddDays(-1);
+
+        // Act
+        await fixture.Sut.ApplyHistoryDateRangeCommand.ExecuteAsync(null);
+
+        // Assert
+        await fixture.Interaction.Received(1).ShowMessageAsync(AppResources.ValidationTitle, AppResources.InvalidDateRange, AppResources.Cancel);
+        await fixture.Repository.DidNotReceive().GetAllAsync(Arg.Any<DateTime?>(), Arg.Any<DateTime?>(), Arg.Any<CancellationToken>());
+    }
+
+    /// <summary>Creates an HTML report using the selected period and custom date range.</summary>
+    [Fact]
+    public async Task ConfirmExportCommand_Report_UsesCombinedDateRange()
+    {
+        // Arrange
+        fixture.Reset();
+        fixture.Sut.ExportReportCommand.Execute(null);
+        fixture.Sut.SelectedExportFilter = 2;
+        fixture.Sut.UseExportDateRange = true;
+        fixture.Sut.ExportStartDate = DateTime.Today.AddDays(-3);
+        fixture.Sut.ExportEndDate = DateTime.Today.AddDays(-1);
+        fixture.ExportService.CreateReportAsync(Arg.Any<DateTime?>(), Arg.Any<DateTime?>(), Arg.Any<CancellationToken>()).Returns("report.html");
+
+        // Act
+        await fixture.Sut.ConfirmExportCommand.ExecuteAsync(null);
+
+        // Assert
+        await fixture.ExportService.Received(1).CreateReportAsync(DateTime.Today.AddDays(-3), DateTime.Today, Arg.Any<CancellationToken>());
+        await fixture.SharingService.Received(1).ShareAsync("report.html", AppResources.ShareReport);
+        Assert.False(fixture.Sut.IsExporting);
+    }
+
+    /// <summary>Creates a CSV backup for the selected export range.</summary>
+    [Fact]
+    public async Task ConfirmExportCommand_Backup_UsesSelectedDateRange()
+    {
+        // Arrange
+        fixture.Reset();
+        fixture.Sut.ExportBackupCommand.Execute(null);
+        fixture.Sut.UseExportDateRange = true;
+        fixture.Sut.ExportStartDate = DateTime.Today.AddDays(-5);
+        fixture.Sut.ExportEndDate = DateTime.Today.AddDays(-1);
+        fixture.ExportService.CreateBackupAsync(Arg.Any<DateTime?>(), Arg.Any<DateTime?>(), Arg.Any<CancellationToken>()).Returns("backup.csv");
+
+        // Act
+        await fixture.Sut.ConfirmExportCommand.ExecuteAsync(null);
+
+        // Assert
+        await fixture.ExportService.Received(1).CreateBackupAsync(DateTime.Today.AddDays(-5), DateTime.Today, Arg.Any<CancellationToken>());
+        await fixture.SharingService.Received(1).ShareAsync("backup.csv", AppResources.ShareBackup);
+    }
+
+    /// <summary>Rejects invalid dates without creating an export file.</summary>
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task ConfirmExportCommand_InvalidDateRange_ShowsValidation(bool futureDate)
+    {
+        // Arrange
+        fixture.Reset();
+        fixture.Sut.ExportReportCommand.Execute(null);
+        fixture.Sut.UseExportDateRange = true;
+        fixture.Sut.ExportStartDate = DateTime.Today;
+        fixture.Sut.ExportEndDate = DateTime.Today.AddDays(futureDate ? 1 : -1);
+
+        // Act
+        await fixture.Sut.ConfirmExportCommand.ExecuteAsync(null);
+
+        // Assert
+        await fixture.Interaction.Received(1).ShowMessageAsync(AppResources.ValidationTitle, AppResources.InvalidDateRange, AppResources.Cancel);
+        await fixture.ExportService.DidNotReceive().CreateReportAsync(Arg.Any<DateTime?>(), Arg.Any<DateTime?>(), Arg.Any<CancellationToken>());
+        Assert.True(fixture.Sut.IsExporting);
     }
 
     /// <summary>Moves between pages and resets to the first page when the filter changes.</summary>

@@ -6,6 +6,7 @@ BloodPressureDiary is a .NET MAUI application for recording blood pressure measu
 
 - `MainPage` — Displays the measurements sheet.
 - `NewBloodPressureMeasurementView` — Displays the form for a new blood pressure measurement.
+- `ExportOptionsView` — Displays the export options form.
 - `SettingsPage` — Displays reminder settings.
 - `AppShell` — Defines the application's measurements and settings tabs.
 
@@ -56,6 +57,16 @@ Manages measurements, history filters, pagination, and file operations.
 - `IsEmpty` — Gets whether no measurements are currently available.
 - `HistoryFilters` — Gets the available history filters.
 - `SelectedHistoryFilter` — Gets or sets the selected history filter.
+- `Today` — Gets today's date for date selection.
+- `UseHistoryDateRange` — Gets or sets whether the history uses a custom date range.
+- `HistoryStartDate` — Gets or sets the first date in the history range.
+- `HistoryEndDate` — Gets or sets the last date in the history range.
+- `IsExporting` — Gets whether the export options are visible.
+- `ExportWindowTitle` — Gets the export options title.
+- `SelectedExportFilter` — Gets or sets the selected export period.
+- `UseExportDateRange` — Gets or sets whether export uses a custom date range.
+- `ExportStartDate` — Gets or sets the first date in the export range.
+- `ExportEndDate` — Gets or sets the last date in the export range.
 - `PageText` — Gets the current page and total page count.
 - `HasPreviousPage` — Gets whether the previous page is available.
 - `HasNextPage` — Gets whether the next page is available.
@@ -67,22 +78,26 @@ Manages measurements, history filters, pagination, and file operations.
 - `MeasuredDate` — Gets or sets the new measurement date.
 - `MeasuredTime` — Gets or sets the new measurement time.
 - `SaveCommand` — Gets the save measurement command.
-- `AddNewItemCommand` — Gets the open new measurement form command.
+- `AddBloodPressureMeasurementCommand` — Gets the open new measurement form command.
 - `CancelNewItemCommand` — Gets the cancel new measurement command.
 - `LoadCommand` — Gets the refresh measurements command.
 - `FilterHistoryCommand` — Gets the history filter change command.
+- `ApplyHistoryDateRangeCommand` — Gets the command that applies the history date range.
 - `EditCommand` — Gets the inline edit command.
 - `SaveEditCommand` — Gets the inline edit save command.
 - `CancelEditCommand` — Gets the inline edit cancel command.
 - `DeleteCommand` — Gets the delete command.
-- `ExportBackupCommand` — Gets the CSV backup command.
+- `ExportBackupCommand` — Gets the command that opens CSV backup options.
 - `ImportBackupCommand` — Gets the CSV backup import command.
-- `ExportReportCommand` — Gets the HTML report command.
+- `ExportReportCommand` — Gets the command that opens HTML report options.
+- `ConfirmExportCommand` — Gets the command that creates and shares the selected export.
+- `CancelExportCommand` — Gets the command that closes export options.
 - `OpenSettingsCommand` — Gets the settings navigation command.
 - `PreviousPageCommand` — Gets the previous history page command.
 - `NextPageCommand` — Gets the next history page command.
 - `LoadAsync()` (private) — Loads saved measurements into the row collection.
 - `FilterHistoryAsync()` (private) — Resets pagination and reloads measurements for the selected history filter.
+- `ApplyHistoryDateRangeAsync()` (private) — Resets pagination and applies the history date range.
 - `OpenNewBloodPressureMeasurement()` (private) — Opens the form for a new measurement.
 - `CancelNewBloodPressureMeasurement()` (private) — Closes the new measurement form and clears its inputs.
 - `SaveAsync()` (private) — Validates and saves a new measurement, then reloads the rows.
@@ -90,9 +105,10 @@ Manages measurements, history filters, pagination, and file operations.
 - `SaveEditAsync()` (private) — Validates and saves changes to the selected measurement row.
 - `CancelEdit()` (private) — Cancels editing the selected measurement row.
 - `DeleteAsync()` (private) — Requests confirmation and deletes the selected measurement.
-- `ExportBackupAsync()` (private) — Creates and shares a CSV backup.
+- `OpenExport()` (private) — Opens the export options for the selected file type.
 - `ImportBackupAsync()` (private) — Imports a selected CSV backup and refreshes the history.
-- `ExportReportAsync()` (private) — Creates and shares an HTML report.
+- `ExportAsync()` (private) — Creates and shares the selected file for the chosen date range.
+- `TryGetDateRange()` (private) — Combines the selected period with a valid custom date range.
 - `TryReadValues()` (private) — Parses and validates pressure and pulse values.
 - `ResetNewBloodPressureMeasurement()` (private) — Clears the new measurement inputs and resets the date and time.
 - `UpdatePage()` (private) — Displays the current page of filtered measurements.
@@ -143,9 +159,9 @@ Implements measurement storage with Entity Framework Core.
 
 Exports measurements to CSV and HTML files and imports CSV backups.
 
-- `CreateBackupAsync()` — Creates a CSV backup and returns its path.
+- `CreateBackupAsync()` — Creates a CSV backup for the specified date range and returns its path.
 - `ImportBackupAsync()` — Imports measurements from a selected CSV backup and returns whether a file was selected.
-- `CreateReportAsync()` — Creates an HTML report and returns its path.
+- `CreateReportAsync()` — Creates an HTML report for the specified date range and returns its path.
 - `Csv()` (private) — Escapes and quotes a CSV value.
 - `WriteAsync()` (private) — Writes the supplied contents to a cache file and returns its path.
 
@@ -215,7 +231,7 @@ Provides localized application strings.
 - `HomeTab` — Gets the home tab title.
 - `SettingsTab` — Gets the settings tab title.
 - `NewBloodPressureMeasurement` — Gets the new measurement heading.
-- `AddNewItem` — Gets the add measurement action label.
+- `AddBloodPressureMeasurement` — Gets the add measurement action label.
 - `Systolic` — Gets the systolic pressure label.
 - `Diastolic` — Gets the diastolic pressure label.
 - `Pulse` — Gets the pulse label.
@@ -234,6 +250,13 @@ Provides localized application strings.
 - `ImportSucceeded` — Gets the import success message.
 - `ImportFailed` — Gets the import failure message.
 - `HistoryFilter` — Gets the history filter label.
+- `UseDateRange` — Gets the custom date range label.
+- `StartDate` — Gets the start date label.
+- `EndDate` — Gets the end date label.
+- `ApplyFilter` — Gets the apply filter action label.
+- `ExportPeriod` — Gets the export period label.
+- `CreateFile` — Gets the create file action label.
+- `InvalidDateRange` — Gets the invalid date range message.
 - `AllMeasurements` — Gets the all measurements filter label.
 - `Today` — Gets the today filter label.
 - `LastWeek` — Gets the last week filter label.

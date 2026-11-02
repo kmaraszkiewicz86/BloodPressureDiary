@@ -12,9 +12,9 @@ namespace BloodPressureDiary.UI.Services;
 public sealed class FileExportService(IBloodPressureMeasurementRepository _repository, IFilePicker _filePicker, IFileSystem _fileSystem) : IFileExportService
 {
     /// <inheritdoc />
-    public async Task<string> CreateBackupAsync(CancellationToken cancellationToken = default)
+    public async Task<string> CreateBackupAsync(DateTime? startDate = null, DateTime? endDate = null, CancellationToken cancellationToken = default)
     {
-        var bloodPressureMeasurements = await _repository.GetAllAsync(cancellationToken);
+        var bloodPressureMeasurements = await _repository.GetAllAsync(startDate, endDate, cancellationToken);
         var builder = new StringBuilder();
         builder.AppendLine("MeasuredAt,Systolic,Diastolic,Pulse,Notes");
 
@@ -83,9 +83,9 @@ public sealed class FileExportService(IBloodPressureMeasurementRepository _repos
     }
 
     /// <inheritdoc />
-    public async Task<string> CreateReportAsync(CancellationToken cancellationToken = default)
+    public async Task<string> CreateReportAsync(DateTime? startDate = null, DateTime? endDate = null, CancellationToken cancellationToken = default)
     {
-        var bloodPressureMeasurements = await _repository.GetAllAsync(cancellationToken);
+        var bloodPressureMeasurements = await _repository.GetAllAsync(startDate, endDate, cancellationToken);
         var builder = new StringBuilder();
         builder.Append("<!doctype html><html lang=\"").Append(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName)
             .AppendLine("\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>")

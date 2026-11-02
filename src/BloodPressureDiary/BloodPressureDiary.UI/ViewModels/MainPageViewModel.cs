@@ -19,6 +19,7 @@ public sealed class MainPageViewModel(
     private const int PageSize = 10;
     private IReadOnlyList<BloodPressureMeasurement> _filteredBloodPressureMeasurements = [];
     private int _currentPage = 1;
+    private bool _exportReport;
 
     /// <summary>Gets the current page of measurements in descending date order.</summary>
     public ObservableCollection<BloodPressureMeasurementRowViewModel> BloodPressureMeasurements { get; } = [];
@@ -32,6 +33,26 @@ public sealed class MainPageViewModel(
         get;
         set => SetProperty(ref field, value);
     }
+    /// <summary>Gets today's date for date selection.</summary>
+    public DateTime Today => DateTime.Today;
+    /// <summary>Gets or sets whether the history uses a custom date range.</summary>
+    public bool UseHistoryDateRange { get; set => SetProperty(ref field, value); }
+    /// <summary>Gets or sets the first date in the history range.</summary>
+    public DateTime HistoryStartDate { get; set => SetProperty(ref field, value); } = DateTime.Today.AddMonths(-1);
+    /// <summary>Gets or sets the last date in the history range.</summary>
+    public DateTime HistoryEndDate { get; set => SetProperty(ref field, value); } = DateTime.Today;
+    /// <summary>Gets whether the export options are visible.</summary>
+    public bool IsExporting { get; private set => SetProperty(ref field, value); }
+    /// <summary>Gets the export options title.</summary>
+    public string ExportWindowTitle => _exportReport ? AppResources.ExportReport : AppResources.ExportBackup;
+    /// <summary>Gets or sets the selected export period.</summary>
+    public int SelectedExportFilter { get; set => SetProperty(ref field, value); }
+    /// <summary>Gets or sets whether export uses a custom date range.</summary>
+    public bool UseExportDateRange { get; set => SetProperty(ref field, value); }
+    /// <summary>Gets or sets the first date in the export range.</summary>
+    public DateTime ExportStartDate { get; set => SetProperty(ref field, value); } = DateTime.Today.AddMonths(-1);
+    /// <summary>Gets or sets the last date in the export range.</summary>
+    public DateTime ExportEndDate { get; set => SetProperty(ref field, value); } = DateTime.Today;
     /// <summary>Gets the current page and total page count.</summary>
     public string PageText { get; private set => SetProperty(ref field, value); } = string.Empty;
     /// <summary>Gets whether the previous page is available.</summary>
@@ -55,13 +76,15 @@ public sealed class MainPageViewModel(
     /// <summary>Gets the save measurement command.</summary>
     public IAsyncRelayCommand SaveCommand => new AsyncRelayCommand(SaveAsync);
     /// <summary>Gets the open new measurement form command.</summary>
-    public IRelayCommand AddNewItemCommand => new RelayCommand(OpenNewBloodPressureMeasurement);
+    public IRelayCommand AddBloodPressureMeasurementCommand => new RelayCommand(OpenNewBloodPressureMeasurement);
     /// <summary>Gets the cancel new measurement command.</summary>
     public IRelayCommand CancelNewItemCommand => new RelayCommand(CancelNewBloodPressureMeasurement);
     /// <summary>Gets the refresh measurements command.</summary>
     public IAsyncRelayCommand LoadCommand => new AsyncRelayCommand(LoadAsync);
     /// <summary>Gets the history filter change command.</summary>
     public IAsyncRelayCommand<int> FilterHistoryCommand => new AsyncRelayCommand<int>(FilterHistoryAsync);
+    /// <summary>Gets the command that applies the history date range.</summary>
+    public IAsyncRelayCommand ApplyHistoryDateRangeCommand => new AsyncRelayCommand(ApplyHistoryDateRangeAsync);
     /// <summary>Gets the inline edit command.</summary>
     public IAsyncRelayCommand<BloodPressureMeasurementRowViewModel?> EditCommand => new AsyncRelayCommand<BloodPressureMeasurementRowViewModel?>(EditAsync);
     /// <summary>Gets the inline edit save command.</summary>
@@ -70,12 +93,16 @@ public sealed class MainPageViewModel(
     public IRelayCommand<BloodPressureMeasurementRowViewModel?> CancelEditCommand => new RelayCommand<BloodPressureMeasurementRowViewModel?>(CancelEdit);
     /// <summary>Gets the delete command.</summary>
     public IAsyncRelayCommand<BloodPressureMeasurementRowViewModel?> DeleteCommand => new AsyncRelayCommand<BloodPressureMeasurementRowViewModel?>(DeleteAsync);
-    /// <summary>Gets the CSV backup command.</summary>
-    public IAsyncRelayCommand ExportBackupCommand => new AsyncRelayCommand(ExportBackupAsync);
+    /// <summary>Gets the command that opens CSV backup options.</summary>
+    public IRelayCommand ExportBackupCommand => new RelayCommand(() => OpenExport(false));
     /// <summary>Gets the CSV backup import command.</summary>
     public IAsyncRelayCommand ImportBackupCommand => new AsyncRelayCommand(ImportBackupAsync);
-    /// <summary>Gets the HTML report command.</summary>
-    public IAsyncRelayCommand ExportReportCommand => new AsyncRelayCommand(ExportReportAsync);
+    /// <summary>Gets the command that opens HTML report options.</summary>
+    public IRelayCommand ExportReportCommand => new RelayCommand(() => OpenExport(true));
+    /// <summary>Gets the command that creates and shares the selected export.</summary>
+    public IAsyncRelayCommand ConfirmExportCommand => new AsyncRelayCommand(ExportAsync);
+    /// <summary>Gets the command that closes export options.</summary>
+    public IRelayCommand CancelExportCommand => new RelayCommand(() => IsExporting = false);
     /// <summary>Gets the settings navigation command.</summary>
     public IAsyncRelayCommand OpenSettingsCommand => new AsyncRelayCommand(_navigationService.OpenSettingsAsync);
     /// <summary>Gets the previous history page command.</summary>
@@ -100,17 +127,14 @@ public sealed class MainPageViewModel(
     /// <summary>Loads saved measurements into the row collection.</summary>
     private async Task LoadAsync()
     {
+        if (!TryGetDateRange(SelectedHistoryFilter, UseHistoryDateRange, HistoryStartDate, HistoryEndDate, out var startDate, out var endDate))
+        {
+            await _interaction.ShowMessageAsync(AppResources.ValidationTitle, AppResources.InvalidDateRange, AppResources.Cancel);
+            return;
+        }
+
         try
         {
-            var today = DateTime.Today;
-            DateTime? startDate = SelectedHistoryFilter switch
-            {
-                1 => today,
-                2 => today.AddDays(-6),
-                3 => today.AddMonths(-1),
-                _ => null
-            };
-            var endDate = startDate.HasValue ? today.AddDays(1) : (DateTime?)null;
             _filteredBloodPressureMeasurements = await _repository.GetAllAsync(startDate, endDate);
             UpdatePage();
         }
@@ -129,6 +153,13 @@ public sealed class MainPageViewModel(
         }
 
         SelectedHistoryFilter = filter;
+        _currentPage = 1;
+        await LoadAsync();
+    }
+
+    /// <summary>Resets pagination and applies the history date range.</summary>
+    private async Task ApplyHistoryDateRangeAsync()
+    {
         _currentPage = 1;
         await LoadAsync();
     }
@@ -240,18 +271,16 @@ public sealed class MainPageViewModel(
         }
     }
 
-    /// <summary>Creates and shares a CSV backup.</summary>
-    private async Task ExportBackupAsync()
+    /// <summary>Opens the export options for the selected file type.</summary>
+    private void OpenExport(bool report)
     {
-        try
-        {
-            var path = await _exportService.CreateBackupAsync();
-            await _sharingService.ShareAsync(path, AppResources.ShareBackup);
-        }
-        catch
-        {
-            await _interaction.ShowMessageAsync(AppResources.AppTitle, AppResources.ExportFailed, AppResources.Cancel);
-        }
+        _exportReport = report;
+        SelectedExportFilter = 0;
+        UseExportDateRange = false;
+        ExportStartDate = DateTime.Today.AddMonths(-1);
+        ExportEndDate = DateTime.Today;
+        OnPropertyChanged(nameof(ExportWindowTitle));
+        IsExporting = true;
     }
 
     /// <summary>Imports a selected CSV backup and refreshes the history.</summary>
@@ -272,18 +301,56 @@ public sealed class MainPageViewModel(
         }
     }
 
-    /// <summary>Creates and shares an HTML report.</summary>
-    private async Task ExportReportAsync()
+    /// <summary>Creates and shares the selected file for the chosen date range.</summary>
+    private async Task ExportAsync()
     {
+        if (!TryGetDateRange(SelectedExportFilter, UseExportDateRange, ExportStartDate, ExportEndDate, out var startDate, out var endDate))
+        {
+            await _interaction.ShowMessageAsync(AppResources.ValidationTitle, AppResources.InvalidDateRange, AppResources.Cancel);
+            return;
+        }
+
         try
         {
-            var path = await _exportService.CreateReportAsync();
-            await _sharingService.ShareAsync(path, AppResources.ShareReport);
+            var path = _exportReport
+                ? await _exportService.CreateReportAsync(startDate, endDate)
+                : await _exportService.CreateBackupAsync(startDate, endDate);
+            IsExporting = false;
+            await _sharingService.ShareAsync(path, _exportReport ? AppResources.ShareReport : AppResources.ShareBackup);
         }
         catch
         {
             await _interaction.ShowMessageAsync(AppResources.AppTitle, AppResources.ExportFailed, AppResources.Cancel);
         }
+    }
+
+    /// <summary>Combines the selected period with a valid custom date range.</summary>
+    private static bool TryGetDateRange(int filter, bool useCustomRange, DateTime from, DateTime to, out DateTime? startDate, out DateTime? endDate)
+    {
+        var today = DateTime.Today;
+        startDate = filter switch
+        {
+            1 => today,
+            2 => today.AddDays(-6),
+            3 => today.AddMonths(-1),
+            _ => null
+        };
+        endDate = startDate.HasValue ? today.AddDays(1) : null;
+
+        if (!useCustomRange)
+        {
+            return true;
+        }
+
+        if (from.Date > today || to.Date > today || from.Date > to.Date)
+        {
+            return false;
+        }
+
+        var customEndDate = to.Date.AddDays(1);
+        startDate = !startDate.HasValue || from.Date > startDate.Value ? from.Date : startDate;
+        endDate = !endDate.HasValue || customEndDate < endDate.Value ? customEndDate : endDate;
+        return true;
     }
 
     /// <summary>Parses and validates pressure and pulse values.</summary>

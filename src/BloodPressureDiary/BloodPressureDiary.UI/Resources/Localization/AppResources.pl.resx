@@ -9,7 +9,7 @@
   <data name="HomeTab" xml:space="preserve"><value>Pomiary</value></data>
   <data name="SettingsTab" xml:space="preserve"><value>Ustawienia</value></data>
   <data name="NewBloodPressureMeasurement" xml:space="preserve"><value>Nowy pomiar</value></data>
-  <data name="AddNewItem" xml:space="preserve"><value>Dodaj pomiar</value></data>
+  <data name="AddBloodPressureMeasurement" xml:space="preserve"><value>Dodaj pomiar ciśnienia</value></data>
   <data name="Systolic" xml:space="preserve"><value>Skurczowe (mmHg)</value></data>
   <data name="Diastolic" xml:space="preserve"><value>Rozkurczowe (mmHg)</value></data>
   <data name="Pulse" xml:space="preserve"><value>Puls (uderzeń/min)</value></data>
@@ -28,6 +28,13 @@
   <data name="ImportSucceeded" xml:space="preserve"><value>Kopia zapasowa została zaimportowana.</value></data>
   <data name="ImportFailed" xml:space="preserve"><value>Nie udało się zaimportować kopii. Sprawdź, czy plik jest poprawną kopią CSV.</value></data>
   <data name="HistoryFilter" xml:space="preserve"><value>Okres historii</value></data>
+  <data name="UseDateRange" xml:space="preserve"><value>Użyj zakresu dat</value></data>
+  <data name="StartDate" xml:space="preserve"><value>Od</value></data>
+  <data name="EndDate" xml:space="preserve"><value>Do</value></data>
+  <data name="ApplyFilter" xml:space="preserve"><value>Zastosuj filtr</value></data>
+  <data name="ExportPeriod" xml:space="preserve"><value>Okres eksportu</value></data>
+  <data name="CreateFile" xml:space="preserve"><value>Utwórz plik</value></data>
+  <data name="InvalidDateRange" xml:space="preserve"><value>Wybierz daty, które nie są w przyszłości. Data początkowa nie może być późniejsza niż końcowa.</value></data>
   <data name="AllMeasurements" xml:space="preserve"><value>Wszystkie</value></data>
   <data name="Today" xml:space="preserve"><value>Dzisiaj</value></data>
   <data name="LastWeek" xml:space="preserve"><value>Ostatnie 7 dni</value></data>
@@ -35,7 +42,7 @@
   <data name="PreviousPage" xml:space="preserve"><value>Poprzednia</value></data>
   <data name="NextPage" xml:space="preserve"><value>Następna</value></data>
   <data name="PageNumber" xml:space="preserve"><value>Strona {0} / {1}</value></data>
-  <data name="ExportReport" xml:space="preserve"><value>Utwórz raport HTML</value></data>
+  <data name="ExportReport" xml:space="preserve"><value>Wygeneruj raport HTML</value></data>
   <data name="ShareBackup" xml:space="preserve"><value>Udostępnij kopię pomiarów</value></data>
   <data name="ShareReport" xml:space="preserve"><value>Udostępnij raport pomiarów</value></data>
   <data name="DeleteTitle" xml:space="preserve"><value>Usuń pomiar</value></data>

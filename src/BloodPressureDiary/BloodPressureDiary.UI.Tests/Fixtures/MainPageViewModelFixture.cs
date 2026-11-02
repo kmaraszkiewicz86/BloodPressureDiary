@@ -57,6 +57,8 @@ public sealed class MainPageViewModelFixture : TestBase
             SharingService = Freeze<IFileSharingService>();
             NavigationService = Freeze<INavigationService>();
             Sut = Create<MainPageViewModel>();
+            Sut.UseHistoryDateRange = false;
+            Sut.SelectedHistoryFilter = 0;
         }
     }
 }

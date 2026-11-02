@@ -15,7 +15,7 @@ public sealed class FileExportServiceTests(FileExportServiceFixture fixture) : I
         // Arrange
         fixture.Initialize();
         var measurement = fixture.CreateBloodPressureMeasurement("First, \"quoted\" line\r\nSecond line");
-        fixture.Repository.GetAllAsync(Arg.Any<CancellationToken>()).Returns(new[] { measurement });
+        fixture.Repository.GetAllAsync(Arg.Any<DateTime?>(), Arg.Any<DateTime?>(), Arg.Any<CancellationToken>()).Returns(new[] { measurement });
         var path = await fixture.Sut.CreateBackupAsync();
         fixture.FilePicker.PickAsync(Arg.Any<PickOptions>()).Returns(new FileResult(path));
 
@@ -85,12 +85,38 @@ public sealed class FileExportServiceTests(FileExportServiceFixture fixture) : I
     {
         // Arrange
         fixture.Initialize();
-        fixture.Repository.GetAllAsync(Arg.Any<CancellationToken>()).Returns(new[] { fixture.CreateBloodPressureMeasurement("<test & note>") });
+        fixture.Repository.GetAllAsync(Arg.Any<DateTime?>(), Arg.Any<DateTime?>(), Arg.Any<CancellationToken>()).Returns(new[] { fixture.CreateBloodPressureMeasurement("<test & note>") });
 
         // Act
         var path = await fixture.Sut.CreateReportAsync();
 
         // Assert
         Assert.Contains("&lt;test &amp; note&gt;", await File.ReadAllTextAsync(path));
+    }
+
+    /// <summary>Requests the specified date range when creating an export.</summary>
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task CreateFileAsync_RequestsSelectedDateRange(bool report)
+    {
+        // Arrange
+        fixture.Initialize();
+        var start = new DateTime(2026, 1, 1);
+        var end = new DateTime(2026, 2, 1);
+        fixture.Repository.GetAllAsync(start, end, Arg.Any<CancellationToken>()).Returns(new[] { fixture.CreateBloodPressureMeasurement() });
+
+        // Act
+        if (report)
+        {
+            await fixture.Sut.CreateReportAsync(start, end);
+        }
+        else
+        {
+            await fixture.Sut.CreateBackupAsync(start, end);
+        }
+
+        // Assert
+        await fixture.Repository.Received(1).GetAllAsync(start, end, Arg.Any<CancellationToken>());
     }
 }

@@ -14,7 +14,7 @@
     <Grid>
         <ScrollView>
             <VerticalStackLayout Padding="16" Spacing="14">
-                <Button Text="{x:Static localization:AppResources.AddNewItem}" Command="{Binding AddNewItemCommand}" />
+                <Button Text="{x:Static localization:AppResources.AddBloodPressureMeasurement}" Command="{Binding AddBloodPressureMeasurementCommand}" />
 
                 <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="8">
                     <Button Grid.Column="0" Text="{x:Static localization:AppResources.ExportBackup}" Command="{Binding ExportBackupCommand}" />
@@ -33,6 +33,21 @@
                                                            CommandParameter="{Binding Source={x:Reference HistoryPicker}, Path=SelectedIndex}" />
                     </Picker.Behaviors>
                 </Picker>
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label Text="{x:Static localization:AppResources.UseDateRange}" VerticalOptions="Center" />
+                    <Switch Grid.Column="1" IsToggled="{Binding UseHistoryDateRange}" />
+                </Grid>
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="10" IsVisible="{Binding UseHistoryDateRange}">
+                    <VerticalStackLayout Grid.Column="0">
+                        <Label Text="{x:Static localization:AppResources.StartDate}" />
+                        <DatePicker Date="{Binding HistoryStartDate}" MaximumDate="{Binding Today}" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="1">
+                        <Label Text="{x:Static localization:AppResources.EndDate}" />
+                        <DatePicker Date="{Binding HistoryEndDate}" MaximumDate="{Binding Today}" />
+                    </VerticalStackLayout>
+                </Grid>
+                <Button Text="{x:Static localization:AppResources.ApplyFilter}" Command="{Binding ApplyHistoryDateRangeCommand}" />
                 <Label Text="{x:Static localization:AppResources.NoBloodPressureMeasurements}" IsVisible="{Binding IsEmpty}" />
 
                 <CollectionView
@@ -218,5 +233,6 @@
         </ScrollView>
 
         <views:NewBloodPressureMeasurementView IsVisible="{Binding IsAddingBloodPressureMeasurement}" />
+        <views:ExportOptionsView IsVisible="{Binding IsExporting}" />
     </Grid>
 </ContentPage>

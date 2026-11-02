@@ -9,7 +9,7 @@
   <data name="HomeTab" xml:space="preserve"><value>Home</value></data>
   <data name="SettingsTab" xml:space="preserve"><value>Settings</value></data>
   <data name="NewBloodPressureMeasurement" xml:space="preserve"><value>New measurement</value></data>
-  <data name="AddNewItem" xml:space="preserve"><value>Add measurement</value></data>
+  <data name="AddBloodPressureMeasurement" xml:space="preserve"><value>Add blood pressure measurement</value></data>
   <data name="Systolic" xml:space="preserve"><value>Systolic (mmHg)</value></data>
   <data name="Diastolic" xml:space="preserve"><value>Diastolic (mmHg)</value></data>
   <data name="Pulse" xml:space="preserve"><value>Pulse (bpm)</value></data>
@@ -28,6 +28,13 @@
   <data name="ImportSucceeded" xml:space="preserve"><value>Backup imported successfully.</value></data>
   <data name="ImportFailed" xml:space="preserve"><value>The backup could not be imported. Check that it is a valid CSV backup.</value></data>
   <data name="HistoryFilter" xml:space="preserve"><value>History period</value></data>
+  <data name="UseDateRange" xml:space="preserve"><value>Use date range</value></data>
+  <data name="StartDate" xml:space="preserve"><value>From</value></data>
+  <data name="EndDate" xml:space="preserve"><value>To</value></data>
+  <data name="ApplyFilter" xml:space="preserve"><value>Apply filter</value></data>
+  <data name="ExportPeriod" xml:space="preserve"><value>Export period</value></data>
+  <data name="CreateFile" xml:space="preserve"><value>Create file</value></data>
+  <data name="InvalidDateRange" xml:space="preserve"><value>Choose dates that are not in the future. The start date must not be after the end date.</value></data>
   <data name="AllMeasurements" xml:space="preserve"><value>All</value></data>
   <data name="Today" xml:space="preserve"><value>Today</value></data>
   <data name="LastWeek" xml:space="preserve"><value>Last 7 days</value></data>
@@ -35,7 +42,7 @@
   <data name="PreviousPage" xml:space="preserve"><value>Previous</value></data>
   <data name="NextPage" xml:space="preserve"><value>Next</value></data>
   <data name="PageNumber" xml:space="preserve"><value>Page {0} / {1}</value></data>
-  <data name="ExportReport" xml:space="preserve"><value>Export HTML report</value></data>
+  <data name="ExportReport" xml:space="preserve"><value>Generate HTML report</value></data>
   <data name="ShareBackup" xml:space="preserve"><value>Share blood pressure backup</value></data>
   <data name="ShareReport" xml:space="preserve"><value>Share blood pressure report</value></data>
   <data name="DeleteTitle" xml:space="preserve"><value>Delete measurement</value></data>

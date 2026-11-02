@@ -19,7 +19,7 @@ public static class AppResources
     /// <summary>Gets the new measurement heading.</summary>
     public static string NewBloodPressureMeasurement => Get(nameof(NewBloodPressureMeasurement));
     /// <summary>Gets the add measurement action label.</summary>
-    public static string AddNewItem => Get(nameof(AddNewItem));
+    public static string AddBloodPressureMeasurement => Get(nameof(AddBloodPressureMeasurement));
     /// <summary>Gets the systolic pressure label.</summary>
     public static string Systolic => Get(nameof(Systolic));
     /// <summary>Gets the diastolic pressure label.</summary>
@@ -56,6 +56,20 @@ public static class AppResources
     public static string ImportFailed => Get(nameof(ImportFailed));
     /// <summary>Gets the history filter label.</summary>
     public static string HistoryFilter => Get(nameof(HistoryFilter));
+    /// <summary>Gets the custom date range label.</summary>
+    public static string UseDateRange => Get(nameof(UseDateRange));
+    /// <summary>Gets the start date label.</summary>
+    public static string StartDate => Get(nameof(StartDate));
+    /// <summary>Gets the end date label.</summary>
+    public static string EndDate => Get(nameof(EndDate));
+    /// <summary>Gets the apply filter action label.</summary>
+    public static string ApplyFilter => Get(nameof(ApplyFilter));
+    /// <summary>Gets the export period label.</summary>
+    public static string ExportPeriod => Get(nameof(ExportPeriod));
+    /// <summary>Gets the create file action label.</summary>
+    public static string CreateFile => Get(nameof(CreateFile));
+    /// <summary>Gets the invalid date range message.</summary>
+    public static string InvalidDateRange => Get(nameof(InvalidDateRange));
     /// <summary>Gets the all measurements filter label.</summary>
     public static string AllMeasurements => Get(nameof(AllMeasurements));
     /// <summary>Gets the today filter label.</summary>
