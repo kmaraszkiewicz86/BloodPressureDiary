@@ -19,6 +19,7 @@ public static class ServiceCollectionExtensions
             var databasePath = Path.Combine(FileSystem.AppDataDirectory, "blood-pressure-diary.db");
             services.AddDbContext<DiaryDbContext>(options => options.UseSqlite($"Data Source={databasePath}"));
             services.AddTransient<IBloodPressureMeasurementRepository, BloodPressureMeasurementRepository>();
+            services.AddTransient<IBloodPressureMeasurementReminderService, BloodPressureMeasurementReminderService>();
             services.AddTransient<IFileExportService, FileExportService>();
             services.AddSingleton<IFilePicker>(FilePicker.Default);
             services.AddSingleton<IFileSystem>(FileSystem.Current);

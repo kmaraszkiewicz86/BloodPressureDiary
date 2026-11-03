@@ -11,6 +11,9 @@ public interface IBloodPressureMeasurementRepository
     /// <summary>Returns measurements within the specified date range ordered from newest to oldest.</summary>
     Task<IReadOnlyList<BloodPressureMeasurement>> GetAllAsync(DateTime? startDate, DateTime? endDate, CancellationToken cancellationToken = default);
 
+    /// <summary>Checks whether a measurement exists within the specified date range.</summary>
+    Task<bool> ExistsAsync(DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default);
+
     /// <summary>Adds a measurement.</summary>
     Task AddAsync(BloodPressureMeasurement bloodPressureMeasurement, CancellationToken cancellationToken = default);
 

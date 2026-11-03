@@ -32,6 +32,11 @@ public sealed class BloodPressureMeasurementRepository(DiaryDbContext _context) 
     }
 
     /// <inheritdoc />
+    public Task<bool> ExistsAsync(DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default) =>
+        _context.BloodPressureMeasurements.AsNoTracking()
+            .AnyAsync(measurement => measurement.MeasuredAt >= startDate && measurement.MeasuredAt < endDate, cancellationToken);
+
+    /// <inheritdoc />
     public async Task AddAsync(BloodPressureMeasurement bloodPressureMeasurement, CancellationToken cancellationToken = default)
     {
         await _context.BloodPressureMeasurements.AddAsync(bloodPressureMeasurement, cancellationToken);

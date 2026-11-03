@@ -1,4 +1,7 @@
+using BloodPressureDiary.UI.Interfaces;
 using BloodPressureDiary.UI.Resources.Localization;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Maui;
 using Microsoft.Maui.Storage;
 using NativeNotificationManager = global::Android.App.NotificationManager;
 using NativeNotification = global::Android.App.Notification;
@@ -10,6 +13,7 @@ using NativeContext = global::Android.Content.Context;
 using NativeIntent = global::Android.Content.Intent;
 using NativeActivityFlags = global::Android.Content.ActivityFlags;
 using NativeReceiver = global::Android.Content.BroadcastReceiver;
+using NativeLog = global::Android.Util.Log;
 
 namespace BloodPressureDiary.UI.Platforms.Android;
 
@@ -18,15 +22,47 @@ namespace BloodPressureDiary.UI.Platforms.Android;
 public sealed class DailyReminderReceiver : NativeReceiver
 {
     private const string _channelId = "blood-pressure-reminders";
+    private const int _notificationId = 7421;
 
     /// <inheritdoc />
-    public override void OnReceive(NativeContext? context, NativeIntent? intent)
+    public override async void OnReceive(NativeContext? context, NativeIntent? intent)
     {
         if (context is null || !Preferences.Default.Get("daily-reminder-enabled", false))
         {
             return;
         }
 
+        var pendingResult = GoAsync();
+        try
+        {
+            var services = IPlatformApplication.Current?.Services;
+            if (services is null)
+            {
+                return;
+            }
+
+            using var scope = services.CreateScope();
+            var reminderService = scope.ServiceProvider.GetRequiredService<IBloodPressureMeasurementReminderService>();
+            if (!await reminderService.ShouldShowReminderAsync() || !Preferences.Default.Get("daily-reminder-enabled", false))
+            {
+                return;
+            }
+
+            ShowNotification(context);
+        }
+        catch (Exception exception)
+        {
+            NativeLog.Error(nameof(DailyReminderReceiver), exception.ToString());
+        }
+        finally
+        {
+            pendingResult?.Finish();
+        }
+    }
+
+    /// <summary>Displays the measurement reminder notification.</summary>
+    private static void ShowNotification(NativeContext context)
+    {
         var manager = (NativeNotificationManager?)context.GetSystemService(NativeContext.NotificationService);
         if (manager is null)
         {
@@ -63,6 +99,6 @@ public sealed class DailyReminderReceiver : NativeReceiver
             .SetContentIntent(pendingIntent)
             .SetAutoCancel(true)
             .Build();
-        manager.Notify(7421, notification);
+        manager.Notify(_notificationId, notification);
     }
 }

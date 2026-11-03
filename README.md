@@ -150,10 +150,17 @@ Implements measurement storage with Entity Framework Core.
 
 - `GetAllAsync()` — Returns measurements ordered from newest to oldest.
 - `GetAllAsync(startDate, endDate)` — Returns measurements within the specified date range ordered from newest to oldest.
+- `ExistsAsync()` — Checks whether a measurement exists within the specified date range.
 - `AddAsync()` — Adds a measurement.
 - `AddRangeAsync()` — Adds a collection of measurements.
 - `UpdateAsync()` — Updates a measurement.
 - `DeleteAsync()` — Removes a measurement by identifier.
+
+### `BloodPressureMeasurementReminderService`
+
+Checks whether a blood pressure measurement reminder is needed today.
+
+- `ShouldShowReminderAsync()` — Checks whether a reminder should be shown when no measurement exists today.
 
 ### `FileExportService`
 
@@ -205,6 +212,8 @@ Schedules the daily measurement notification with Android AlarmManager.
 
 Schedules and cancels Android reminder alarms.
 
+- `Schedule()` (internal) — Schedules the next daily reminder alarm.
+- `Cancel()` (internal) — Cancels the daily reminder alarm.
 - `GetPendingIntent()` (private) — Creates the pending intent for the daily reminder receiver.
 
 ### `UnsupportedReminderScheduler`
@@ -221,6 +230,8 @@ Restores the daily alarm after an Android device restart.
 ### `DailyReminderReceiver`
 
 Displays the daily blood pressure reminder notification.
+
+- `ShowNotification()` (private) — Displays the measurement reminder notification.
 
 ### `AppResources`
 
@@ -284,3 +295,301 @@ Provides localized application strings.
 - `ReportTitle` — Gets the report title.
 - `ReminderNotification` — Gets the reminder notification text.
 - `Get()` (private) — Returns the localized string or the resource name when no translation is found.
+
+## Polski
+
+BloodPressureDiary to aplikacja .NET MAUI do zapisywania pomiarów ciśnienia na Androidzie. Wykorzystuje CommunityToolkit.Mvvm, Entity Framework Core, SQLite oraz lokalne powiadomienia Androida.
+
+### Widoki
+
+- `MainPage` — Wyświetla zestawienie pomiarów.
+- `NewBloodPressureMeasurementView` — Wyświetla formularz nowego pomiaru ciśnienia.
+- `ExportOptionsView` — Wyświetla formularz opcji eksportu.
+- `SettingsPage` — Wyświetla ustawienia przypomnienia.
+- `AppShell` — Definiuje zakładki pomiarów i ustawień aplikacji.
+
+### Klasy
+
+#### `App`
+
+Udostępnia okno aplikacji.
+
+#### `MauiProgram`
+
+Konfiguruje i buduje aplikację MAUI.
+
+- `CreateMauiApp()` — Tworzy aplikację, rejestruje zależności i stosuje migracje bazy danych.
+
+#### `ServiceCollectionExtensions`
+
+Rejestruje bazę danych aplikacji, serwisy, ViewModele i widoki.
+
+- `AddBloodPressureDiaryServices()` — Rejestruje zależności używane przez dzienniczek ciśnienia.
+
+#### `BloodPressureMeasurement`
+
+Reprezentuje ręcznie zapisany pomiar ciśnienia.
+
+- `Id` — Pobiera lub ustawia identyfikator pomiaru.
+- `Systolic` — Pobiera lub ustawia ciśnienie skurczowe w mmHg.
+- `Diastolic` — Pobiera lub ustawia ciśnienie rozkurczowe w mmHg.
+- `Pulse` — Pobiera lub ustawia opcjonalny puls w uderzeniach na minutę.
+- `Notes` — Pobiera lub ustawia opcjonalną notatkę.
+- `MeasuredAt` — Pobiera lub ustawia lokalną datę i godzinę pomiaru.
+
+#### `DiaryDbContext`
+
+Udostępnia dostęp do lokalnej bazy danych dzienniczka ciśnienia.
+
+- `BloodPressureMeasurements` — Pobiera zapisane pomiary ciśnienia.
+
+#### `BloodPressureMeasurementConfiguration`
+
+Konfiguruje mapowanie SQLite dla pomiarów ciśnienia.
+
+#### `MainPageViewModel`
+
+Zarządza pomiarami, filtrami historii, paginacją i operacjami na plikach.
+
+- `BloodPressureMeasurements` — Pobiera bieżącą stronę pomiarów w kolejności od najnowszego.
+- `IsEmpty` — Pobiera informację, czy obecnie nie ma dostępnych pomiarów.
+- `HistoryFilters` — Pobiera dostępne filtry historii.
+- `SelectedHistoryFilter` — Pobiera lub ustawia wybrany filtr historii.
+- `Today` — Pobiera dzisiejszą datę do wyboru daty.
+- `UseHistoryDateRange` — Pobiera lub ustawia informację, czy historia używa własnego zakresu dat.
+- `HistoryStartDate` — Pobiera lub ustawia pierwszą datę zakresu historii.
+- `HistoryEndDate` — Pobiera lub ustawia ostatnią datę zakresu historii.
+- `IsExporting` — Pobiera informację, czy widoczne są opcje eksportu.
+- `ExportWindowTitle` — Pobiera tytuł opcji eksportu.
+- `SelectedExportFilter` — Pobiera lub ustawia wybrany okres eksportu.
+- `UseExportDateRange` — Pobiera lub ustawia informację, czy eksport używa własnego zakresu dat.
+- `ExportStartDate` — Pobiera lub ustawia pierwszą datę zakresu eksportu.
+- `ExportEndDate` — Pobiera lub ustawia ostatnią datę zakresu eksportu.
+- `PageText` — Pobiera bieżący numer strony i liczbę stron.
+- `HasPreviousPage` — Pobiera informację, czy dostępna jest poprzednia strona.
+- `HasNextPage` — Pobiera informację, czy dostępna jest następna strona.
+- `IsAddingBloodPressureMeasurement` — Pobiera informację, czy formularz nowego pomiaru jest widoczny.
+- `SystolicInput` — Pobiera lub ustawia nową wartość ciśnienia skurczowego.
+- `DiastolicInput` — Pobiera lub ustawia nową wartość ciśnienia rozkurczowego.
+- `PulseInput` — Pobiera lub ustawia nową opcjonalną wartość pulsu.
+- `NotesInput` — Pobiera lub ustawia nową opcjonalną notatkę.
+- `MeasuredDate` — Pobiera lub ustawia datę nowego pomiaru.
+- `MeasuredTime` — Pobiera lub ustawia godzinę nowego pomiaru.
+- `SaveCommand` — Pobiera polecenie zapisu pomiaru.
+- `AddBloodPressureMeasurementCommand` — Pobiera polecenie otwarcia formularza nowego pomiaru.
+- `CancelNewItemCommand` — Pobiera polecenie anulowania nowego pomiaru.
+- `LoadCommand` — Pobiera polecenie odświeżenia pomiarów.
+- `FilterHistoryCommand` — Pobiera polecenie zmiany filtra historii.
+- `ApplyHistoryDateRangeCommand` — Pobiera polecenie zastosowania zakresu dat historii.
+- `EditCommand` — Pobiera polecenie edycji w wierszu.
+- `SaveEditCommand` — Pobiera polecenie zapisu edycji w wierszu.
+- `CancelEditCommand` — Pobiera polecenie anulowania edycji w wierszu.
+- `DeleteCommand` — Pobiera polecenie usunięcia.
+- `ExportBackupCommand` — Pobiera polecenie otwarcia opcji kopii CSV.
+- `ImportBackupCommand` — Pobiera polecenie importu kopii CSV.
+- `ExportReportCommand` — Pobiera polecenie otwarcia opcji raportu HTML.
+- `ConfirmExportCommand` — Pobiera polecenie utworzenia i udostępnienia wybranego pliku.
+- `CancelExportCommand` — Pobiera polecenie zamknięcia opcji eksportu.
+- `OpenSettingsCommand` — Pobiera polecenie przejścia do ustawień.
+- `PreviousPageCommand` — Pobiera polecenie przejścia do poprzedniej strony historii.
+- `NextPageCommand` — Pobiera polecenie przejścia do następnej strony historii.
+- `LoadAsync()` (prywatna) — Wczytuje zapisane pomiary do kolekcji wierszy.
+- `FilterHistoryAsync()` (prywatna) — Resetuje paginację i ponownie wczytuje pomiary dla wybranego filtra historii.
+- `ApplyHistoryDateRangeAsync()` (prywatna) — Resetuje paginację i stosuje zakres dat historii.
+- `OpenNewBloodPressureMeasurement()` (prywatna) — Otwiera formularz nowego pomiaru.
+- `CancelNewBloodPressureMeasurement()` (prywatna) — Zamyka formularz nowego pomiaru i czyści jego pola.
+- `SaveAsync()` (prywatna) — Sprawdza i zapisuje nowy pomiar, a następnie ponownie wczytuje wiersze.
+- `EditAsync()` (prywatna) — Rozpoczyna edycję wybranego wiersza pomiaru.
+- `SaveEditAsync()` (prywatna) — Sprawdza i zapisuje zmiany w wybranym wierszu pomiaru.
+- `CancelEdit()` (prywatna) — Anuluje edycję wybranego wiersza pomiaru.
+- `DeleteAsync()` (prywatna) — Prosi o potwierdzenie i usuwa wybrany pomiar.
+- `OpenExport()` (prywatna) — Otwiera opcje eksportu dla wybranego rodzaju pliku.
+- `ImportBackupAsync()` (prywatna) — Importuje wybraną kopię CSV i odświeża historię.
+- `ExportAsync()` (prywatna) — Tworzy i udostępnia wybrany plik dla wybranego zakresu dat.
+- `TryGetDateRange()` (prywatna) — Łączy wybrany okres z poprawnym własnym zakresem dat.
+- `TryReadValues()` (prywatna) — Odczytuje i sprawdza wartości ciśnienia oraz pulsu.
+- `ResetNewBloodPressureMeasurement()` (prywatna) — Czyści pola nowego pomiaru i resetuje datę oraz godzinę.
+- `UpdatePage()` (prywatna) — Wyświetla bieżącą stronę przefiltrowanych pomiarów.
+
+#### `BloodPressureMeasurementRowViewModel`
+
+Przechowuje pomiar i jego tymczasowe wartości edycji w wierszu.
+
+- `BloodPressureMeasurementRowViewModel()` — Tworzy wiersz dla zapisanego pomiaru.
+- `BloodPressureMeasurement` — Pobiera zapisany pomiar.
+- `IsEditing` — Pobiera lub ustawia informację, czy wiersz jest edytowany.
+- `IsNotEditing` — Pobiera informację, czy wiersz jest obecnie wyświetlany poza trybem edycji.
+- `SystolicInput` — Pobiera lub ustawia edytowaną wartość ciśnienia skurczowego.
+- `DiastolicInput` — Pobiera lub ustawia edytowaną wartość ciśnienia rozkurczowego.
+- `PulseInput` — Pobiera lub ustawia edytowaną wartość pulsu.
+- `NotesInput` — Pobiera lub ustawia edytowaną notatkę.
+- `MeasuredDate` — Pobiera lub ustawia edytowaną datę.
+- `MeasuredTime` — Pobiera lub ustawia edytowaną godzinę.
+- `DisplayDateTime` — Pobiera zlokalizowaną datę i godzinę do wyświetlenia.
+- `PulseDisplay` — Pobiera wartość wyświetlaną dla opcjonalnego pulsu.
+- `NotesDisplay` — Pobiera wartość wyświetlaną dla notatki.
+- `BeginEdit()` — Kopiuje bieżące wartości do edytora w wierszu.
+- `CancelEdit()` — Odrzuca zmiany wprowadzane w wierszu.
+- `ApplyEdit()` — Aktualizuje zapisane wartości i kończy edycję w wierszu.
+
+#### `SettingsPageViewModel`
+
+Zarządza ustawieniami codziennego przypomnienia o pomiarze.
+
+- `ReminderEnabled` — Pobiera lub ustawia informację, czy codzienne przypomnienie jest włączone.
+- `ReminderTime` — Pobiera lub ustawia godzinę codziennego przypomnienia.
+- `SaveCommand` — Pobiera polecenie zapisu ustawień.
+- `OpenBloodPressureMeasurementsCommand` — Pobiera polecenie przejścia do pomiarów.
+- `SaveAsync()` (prywatna) — Zapisuje ustawienia przypomnienia i wyświetla wynik.
+
+#### `BloodPressureMeasurementRepository`
+
+Implementuje przechowywanie pomiarów za pomocą Entity Framework Core.
+
+- `GetAllAsync()` — Zwraca pomiary w kolejności od najnowszego.
+- `GetAllAsync(startDate, endDate)` — Zwraca pomiary z określonego zakresu dat w kolejności od najnowszego.
+- `ExistsAsync()` — Sprawdza, czy istnieje pomiar w określonym zakresie dat.
+- `AddAsync()` — Dodaje pomiar.
+- `AddRangeAsync()` — Dodaje kolekcję pomiarów.
+- `UpdateAsync()` — Aktualizuje pomiar.
+- `DeleteAsync()` — Usuwa pomiar na podstawie identyfikatora.
+
+#### `BloodPressureMeasurementReminderService`
+
+Sprawdza, czy dzisiaj potrzebne jest przypomnienie o pomiarze ciśnienia.
+
+- `ShouldShowReminderAsync()` — Sprawdza, czy należy wyświetlić przypomnienie, gdy dzisiaj nie ma pomiaru.
+
+#### `FileExportService`
+
+Eksportuje pomiary do plików CSV i HTML oraz importuje kopie CSV.
+
+- `CreateBackupAsync()` — Tworzy kopię CSV dla określonego zakresu dat i zwraca jej ścieżkę.
+- `ImportBackupAsync()` — Importuje pomiary z wybranej kopii CSV i zwraca informację, czy wybrano plik.
+- `CreateReportAsync()` — Tworzy raport HTML dla określonego zakresu dat i zwraca jego ścieżkę.
+- `Csv()` (prywatna) — Zastępuje znaki specjalne i ujmuje wartość CSV w cudzysłów.
+- `WriteAsync()` (prywatna) — Zapisuje podaną zawartość do pliku w pamięci podręcznej i zwraca jego ścieżkę.
+
+#### `FileSharingService`
+
+Udostępnia pliki przez system operacyjny.
+
+- `ShareAsync()` — Otwiera systemowy arkusz udostępniania dla wskazanego pliku.
+
+#### `NavigationService`
+
+Nawiguje między zakładkami pomiarów i ustawień.
+
+- `OpenSettingsAsync()` — Otwiera zakładkę ustawień.
+- `OpenBloodPressureMeasurementsAsync()` — Otwiera zakładkę pomiarów.
+
+#### `UserInteractionService`
+
+Używa bieżącego Shell do wyświetlania komunikatów użytkownika.
+
+- `ConfirmAsync()` — Prosi użytkownika o potwierdzenie operacji usuwającej dane.
+- `ShowMessageAsync()` — Wyświetla komunikat informacyjny.
+
+#### `ReminderService`
+
+Zapisuje ustawienia przypomnienia i przekazuje planowanie do platformy.
+
+- `IsEnabled` — Pobiera informację, czy codzienne przypomnienia są włączone.
+- `ReminderTime` — Pobiera skonfigurowaną godzinę przypomnienia.
+- `SetReminderAsync()` — Aktualizuje ustawienie i harmonogram przypomnienia.
+- `RestoreAsync()` — Przywraca wcześniej włączone przypomnienie bez pytania o uprawnienie.
+
+#### `AndroidReminderScheduler`
+
+Planuje codzienne powiadomienie o pomiarze za pomocą Android AlarmManager.
+
+- `ScheduleDailyAsync()` — Planuje codzienne powiadomienie i zwraca informację, czy można wyświetlać powiadomienia.
+- `CancelAsync()` — Anuluje codzienne powiadomienie.
+
+#### `DailyReminderAlarm` (wewnętrzna)
+
+Planuje i anuluje alarmy przypomnień Androida.
+
+- `Schedule()` (wewnętrzna) — Planuje następny alarm codziennego przypomnienia.
+- `Cancel()` (wewnętrzna) — Anuluje alarm codziennego przypomnienia.
+- `GetPendingIntent()` (prywatna) — Tworzy oczekujący zamiar dla odbiornika codziennego przypomnienia.
+
+#### `UnsupportedReminderScheduler`
+
+Udostępnia pustą implementację przypomnień na platformach bez obsługi lokalnych przypomnień.
+
+- `ScheduleDailyAsync()` — Planuje codzienne powiadomienie i zwraca informację, czy można wyświetlać powiadomienia.
+- `CancelAsync()` — Anuluje codzienne powiadomienie.
+
+#### `DailyReminderBootReceiver`
+
+Przywraca codzienny alarm po ponownym uruchomieniu urządzenia z Androidem.
+
+#### `DailyReminderReceiver`
+
+Wyświetla powiadomienie z codziennym przypomnieniem o pomiarze ciśnienia.
+
+- `ShowNotification()` (prywatna) — Wyświetla powiadomienie przypominające o pomiarze.
+
+#### `AppResources`
+
+Udostępnia zlokalizowane teksty aplikacji.
+
+- `AppTitle` — Pobiera tytuł aplikacji.
+- `BloodPressureMeasurementsTab` — Pobiera tytuł zakładki pomiarów.
+- `HomeTab` — Pobiera tytuł zakładki głównej.
+- `SettingsTab` — Pobiera tytuł zakładki ustawień.
+- `NewBloodPressureMeasurement` — Pobiera nagłówek nowego pomiaru.
+- `AddBloodPressureMeasurement` — Pobiera etykietę dodawania pomiaru.
+- `Systolic` — Pobiera etykietę ciśnienia skurczowego.
+- `Diastolic` — Pobiera etykietę ciśnienia rozkurczowego.
+- `Pulse` — Pobiera etykietę pulsu.
+- `Notes` — Pobiera etykietę notatek.
+- `Date` — Pobiera etykietę daty.
+- `Time` — Pobiera etykietę godziny.
+- `DateAndTime` — Pobiera etykietę daty i godziny.
+- `Save` — Pobiera etykietę zapisu.
+- `Edit` — Pobiera etykietę edycji.
+- `Delete` — Pobiera etykietę usuwania.
+- `Cancel` — Pobiera etykietę anulowania.
+- `BloodPressureMeasurements` — Pobiera nagłówek zapisanych pomiarów.
+- `NoBloodPressureMeasurements` — Pobiera komunikat o braku pomiarów.
+- `ExportBackup` — Pobiera etykietę eksportu CSV.
+- `ImportBackup` — Pobiera etykietę importu CSV.
+- `ImportSucceeded` — Pobiera komunikat o powodzeniu importu.
+- `ImportFailed` — Pobiera komunikat o niepowodzeniu importu.
+- `HistoryFilter` — Pobiera etykietę filtra historii.
+- `UseDateRange` — Pobiera etykietę własnego zakresu dat.
+- `StartDate` — Pobiera etykietę daty początkowej.
+- `EndDate` — Pobiera etykietę daty końcowej.
+- `ApplyFilter` — Pobiera etykietę zastosowania filtra.
+- `ExportPeriod` — Pobiera etykietę okresu eksportu.
+- `CreateFile` — Pobiera etykietę tworzenia pliku.
+- `InvalidDateRange` — Pobiera komunikat o nieprawidłowym zakresie dat.
+- `AllMeasurements` — Pobiera etykietę filtra wszystkich pomiarów.
+- `Today` — Pobiera etykietę filtra dzisiejszych pomiarów.
+- `LastWeek` — Pobiera etykietę filtra ostatniego tygodnia.
+- `LastMonth` — Pobiera etykietę filtra ostatniego miesiąca.
+- `PreviousPage` — Pobiera etykietę poprzedniej strony.
+- `NextPage` — Pobiera etykietę następnej strony.
+- `PageNumber` — Pobiera format numeru strony.
+- `ExportReport` — Pobiera etykietę raportu HTML.
+- `ShareBackup` — Pobiera tytuł udostępniania kopii.
+- `ShareReport` — Pobiera tytuł udostępniania raportu.
+- `DeleteTitle` — Pobiera tytuł potwierdzenia usunięcia.
+- `DeleteConfirmation` — Pobiera komunikat potwierdzenia usunięcia.
+- `ValidationTitle` — Pobiera tytuł komunikatu walidacji.
+- `RequiredPressure` — Pobiera komunikat walidacji wymaganych wartości ciśnienia.
+- `InvalidPulse` — Pobiera komunikat walidacji opcjonalnego pulsu.
+- `SaveFailed` — Pobiera komunikat o niepowodzeniu zapisu.
+- `DeleteFailed` — Pobiera komunikat o niepowodzeniu usuwania.
+- `LoadFailed` — Pobiera komunikat o niepowodzeniu wczytywania.
+- `ExportFailed` — Pobiera komunikat o niepowodzeniu eksportu.
+- `ReminderTitle` — Pobiera tytuł przypomnienia.
+- `DailyReminder` — Pobiera etykietę codziennego przypomnienia.
+- `ReminderTime` — Pobiera etykietę godziny przypomnienia.
+- `ReminderPermissionDenied` — Pobiera komunikat dotyczący uprawnienia do powiadomień.
+- `ReminderSaved` — Pobiera komunikat o zapisaniu przypomnienia.
+- `ReportTitle` — Pobiera tytuł raportu.
+- `ReminderNotification` — Pobiera tekst powiadomienia przypominającego.
+- `Get()` (prywatna) — Zwraca zlokalizowany tekst lub nazwę zasobu, gdy nie znaleziono tłumaczenia.

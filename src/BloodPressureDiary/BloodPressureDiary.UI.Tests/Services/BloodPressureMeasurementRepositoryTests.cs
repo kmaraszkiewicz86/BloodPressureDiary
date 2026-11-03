@@ -45,6 +45,26 @@ public sealed class BloodPressureMeasurementRepositoryTests(BloodPressureMeasure
         Assert.Equal(start, measurements[1].MeasuredAt);
     }
 
+    /// <summary>Checks measurement existence using inclusive start and exclusive end dates.</summary>
+    [Fact]
+    public async Task ExistsAsync_ChecksDateRangeBoundaries()
+    {
+        // Arrange
+        fixture.Initialize();
+        var today = new DateTime(2026, 1, 2);
+        await fixture.Sut.AddAsync(fixture.CreateBloodPressureMeasurement(today.AddTicks(-1)));
+        await fixture.Sut.AddAsync(fixture.CreateBloodPressureMeasurement(today.AddDays(1)));
+
+        // Act
+        var beforeAddingToday = await fixture.Sut.ExistsAsync(today, today.AddDays(1));
+        await fixture.Sut.AddAsync(fixture.CreateBloodPressureMeasurement(today));
+        var afterAddingToday = await fixture.Sut.ExistsAsync(today, today.AddDays(1));
+
+        // Assert
+        Assert.False(beforeAddingToday);
+        Assert.True(afterAddingToday);
+    }
+
     /// <summary>Saves every measurement in an imported collection.</summary>
     [Fact]
     public async Task AddRangeAsync_StoresMeasurements()

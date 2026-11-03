@@ -1,7 +1,3 @@
-using BloodPressureDiary.UI.Interfaces;
-using Microsoft.Maui.ApplicationModel;
-using Microsoft.Maui.ApplicationModel.DataTransfer;
-using Microsoft.Maui.Storage;
 using NativeAlarmManager = global::Android.App.AlarmManager;
 using NativeContext = global::Android.Content.Context;
 using NativeIntent = global::Android.Content.Intent;
@@ -11,44 +7,12 @@ using NativeAlarmType = global::Android.App.AlarmType;
 
 namespace BloodPressureDiary.UI.Platforms.Android;
 
-/// <summary>Schedules the daily measurement notification with Android AlarmManager.</summary>
-public sealed class AndroidReminderScheduler : IReminderScheduler
-{
-    /// <inheritdoc />
-    public async Task<bool> ScheduleDailyAsync(TimeSpan time, bool requestPermission)
-    {
-        if (global::Android.OS.Build.VERSION.SdkInt >= global::Android.OS.BuildVersionCodes.Tiramisu && requestPermission)
-        {
-            var status = await Permissions.CheckStatusAsync<Permissions.PostNotifications>();
-            if (status != PermissionStatus.Granted)
-            {
-                status = await MainThread.InvokeOnMainThreadAsync(Permissions.RequestAsync<Permissions.PostNotifications>);
-            }
-
-            if (status != PermissionStatus.Granted)
-            {
-                return false;
-            }
-        }
-
-        var context = global::Android.App.Application.Context;
-        DailyReminderAlarm.Schedule(context, time);
-        return true;
-    }
-
-    /// <inheritdoc />
-    public Task CancelAsync()
-    {
-        DailyReminderAlarm.Cancel(global::Android.App.Application.Context);
-        return Task.CompletedTask;
-    }
-}
-
 /// <summary>Schedules and cancels Android reminder alarms.</summary>
 internal static class DailyReminderAlarm
 {
     private const int _requestCode = 7421;
 
+    /// <summary>Schedules the next daily reminder alarm.</summary>
     internal static void Schedule(NativeContext context, TimeSpan time)
     {
         var alarmManager = context.GetSystemService(NativeContext.AlarmService) as NativeAlarmManager;
@@ -70,6 +34,7 @@ internal static class DailyReminderAlarm
             GetPendingIntent(context));
     }
 
+    /// <summary>Cancels the daily reminder alarm.</summary>
     internal static void Cancel(NativeContext context)
     {
         var alarmManager = context.GetSystemService(NativeContext.AlarmService) as NativeAlarmManager;
