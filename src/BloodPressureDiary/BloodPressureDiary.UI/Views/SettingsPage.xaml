@@ -2,18 +2,80 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:localization="clr-namespace:BloodPressureDiary.UI.Resources.Localization"
+             xmlns:behaviors="clr-namespace:Kmaraszkiewicz86.Maui.Behaviors;assembly=Kmaraszkiewicz86.Maui.Behaviors"
+             xmlns:models="clr-namespace:BloodPressureDiary.UI.Models"
              x:Class="BloodPressureDiary.UI.Views.SettingsPage"
              Title="{x:Static localization:AppResources.SettingsTab}">
-    <VerticalStackLayout Padding="24" Spacing="18">
-        <Label Text="{x:Static localization:AppResources.ReminderTitle}" FontSize="22" FontAttributes="Bold" />
-        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
-            <Label Text="{x:Static localization:AppResources.DailyReminder}" VerticalOptions="Center" />
-            <Switch Grid.Column="1" IsToggled="{Binding ReminderEnabled}" />
-        </Grid>
-        <VerticalStackLayout Spacing="6">
-            <Label Text="{x:Static localization:AppResources.ReminderTime}" />
-            <TimePicker Time="{Binding ReminderTime}" />
+    <ContentPage.Resources>
+        <!-- Layout and headings for reminder settings. -->
+        <Style x:Key="SettingsContentStyle" TargetType="VerticalStackLayout">
+            <Setter Property="Padding" Value="24" />
+            <Setter Property="Spacing" Value="18" />
+        </Style>
+        <Style x:Key="SettingsHeadingStyle" TargetType="Label" BasedOn="{StaticResource DefaultLabelStyle}">
+            <Setter Property="FontSize" Value="22" />
+            <Setter Property="FontAttributes" Value="Bold" />
+        </Style>
+        <Style x:Key="ReminderToggleStyle" TargetType="Grid">
+            <Setter Property="ColumnSpacing" Value="16" />
+        </Style>
+        <Style x:Key="CenteredLabelStyle" TargetType="Label" BasedOn="{StaticResource DefaultLabelStyle}">
+            <Setter Property="VerticalOptions" Value="Center" />
+        </Style>
+        <Style x:Key="ReminderFieldStyle" TargetType="VerticalStackLayout">
+            <Setter Property="Spacing" Value="6" />
+        </Style>
+        <Style x:Key="ReminderListStyle" TargetType="VerticalStackLayout">
+            <Setter Property="Spacing" Value="8" />
+        </Style>
+        <Style x:Key="ReminderRowStyle" TargetType="Grid">
+            <Setter Property="ColumnSpacing" Value="10" />
+        </Style>
+        <Style x:Key="ReminderDetailsStyle" TargetType="VerticalStackLayout">
+            <Setter Property="VerticalOptions" Value="Center" />
+        </Style>
+    </ContentPage.Resources>
+    <ContentPage.Behaviors>
+        <behaviors:EventToCommandBehavior EventName="Appearing" Command="{Binding LoadCommand}" />
+    </ContentPage.Behaviors>
+
+    <ScrollView IsEnabled="{Binding IsLoaded}">
+        <VerticalStackLayout Style="{StaticResource SettingsContentStyle}">
+            <Label Text="{x:Static localization:AppResources.ReminderTitle}" Style="{StaticResource SettingsHeadingStyle}" />
+            <!-- Enable or disable reminder notifications. -->
+            <Grid ColumnDefinitions="*,Auto" Style="{StaticResource ReminderToggleStyle}">
+                <Label Text="{x:Static localization:AppResources.EnableReminders}" Style="{StaticResource CenteredLabelStyle}" />
+                <Switch Grid.Column="1" IsToggled="{Binding ReminderEnabled}" />
+            </Grid>
+            <!-- Configure the interval and time for a new reminder. -->
+            <VerticalStackLayout Style="{StaticResource ReminderFieldStyle}">
+                <Label Text="{x:Static localization:AppResources.ReminderInterval}" />
+                <Entry Text="{Binding IntervalDaysInput}" Keyboard="Numeric" />
+            </VerticalStackLayout>
+            <VerticalStackLayout Style="{StaticResource ReminderFieldStyle}">
+                <Label Text="{x:Static localization:AppResources.ReminderTime}" />
+                <TimePicker Time="{Binding ReminderTime}" />
+            </VerticalStackLayout>
+            <Button Text="{x:Static localization:AppResources.AddReminderTime}" Command="{Binding AddReminderCommand}" />
+            <!-- Configured reminders and removal actions. -->
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Reminders}" Style="{StaticResource ReminderListStyle}">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="models:ReminderSchedule">
+                        <Grid ColumnDefinitions="*,Auto" Style="{StaticResource ReminderRowStyle}">
+                            <VerticalStackLayout Grid.Column="0" Style="{StaticResource ReminderDetailsStyle}">
+                                <Label Text="{Binding DisplayTime}" />
+                                <Label Text="{Binding DisplayInterval}" />
+                            </VerticalStackLayout>
+                            <Button Grid.Column="1"
+                                    Text="{x:Static localization:AppResources.Delete}"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.RemoveReminderCommand}"
+                                    CommandParameter="{Binding .}" />
+                        </Grid>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+            <!-- Save reminder settings. -->
+            <Button Text="{x:Static localization:AppResources.Save}" Command="{Binding SaveCommand}" />
         </VerticalStackLayout>
-        <Button Text="{x:Static localization:AppResources.Save}" Command="{Binding SaveCommand}" />
-    </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

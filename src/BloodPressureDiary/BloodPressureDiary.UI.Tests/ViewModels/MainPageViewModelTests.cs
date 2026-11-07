@@ -1,4 +1,4 @@
-using BloodPressureDiary.UI.Database;
+using BloodPressureDiary.UI.Database.Entities;
 using BloodPressureDiary.UI.Resources.Localization;
 using BloodPressureDiary.UI.Tests.Fixtures;
 using NSubstitute;

@@ -1,27 +1,22 @@
+using BloodPressureDiary.UI.Models;
+
 namespace BloodPressureDiary.UI.Interfaces;
 
-/// <summary>Stores reminder preferences and manages the daily local reminder.</summary>
+/// <summary>Stores and manages local reminder schedules.</summary>
 public interface IReminderService
 {
-    /// <summary>Gets whether daily reminders are enabled.</summary>
-    bool IsEnabled { get; }
+    /// <summary>Gets whether reminders are enabled.</summary>
+    Task<bool> IsEnabledAsync();
 
-    /// <summary>Gets the configured reminder time.</summary>
-    TimeSpan ReminderTime { get; }
+    /// <summary>Gets the configured reminder schedules.</summary>
+    Task<IReadOnlyList<ReminderSchedule>> GetRemindersAsync();
 
-    /// <summary>Updates the reminder preference and schedule.</summary>
-    Task<bool> SetReminderAsync(bool enabled, TimeSpan time, bool requestPermission = true);
+    /// <summary>Updates the reminder preference and schedules.</summary>
+    Task<bool> SetRemindersAsync(bool enabled, IReadOnlyList<ReminderSchedule> reminders, bool requestPermission = true);
 
-    /// <summary>Restores a previously enabled reminder without prompting for permission.</summary>
+    /// <summary>Restores previously enabled reminders without prompting for permission.</summary>
     Task RestoreAsync();
-}
 
-/// <summary>Schedules local platform notifications.</summary>
-public interface IReminderScheduler
-{
-    /// <summary>Schedules a daily notification and reports whether notifications can be shown.</summary>
-    Task<bool> ScheduleDailyAsync(TimeSpan time, bool requestPermission);
-
-    /// <summary>Cancels the daily notification.</summary>
-    Task CancelAsync();
+    /// <summary>Schedules the next occurrence of a configured reminder when enabled.</summary>
+    Task<bool> RescheduleAsync(int reminderId);
 }

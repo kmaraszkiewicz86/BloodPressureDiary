@@ -1,4 +1,4 @@
-namespace BloodPressureDiary.UI.Database;
+namespace BloodPressureDiary.UI.Database.Entities;
 
 /// <summary>Represents a manually recorded blood pressure measurement.</summary>
 public sealed class BloodPressureMeasurement

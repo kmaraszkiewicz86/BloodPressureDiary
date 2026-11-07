@@ -1,61 +1,113 @@
 using BloodPressureDiary.UI.Interfaces;
-using Microsoft.Maui.Storage;
-using System.Globalization;
+using BloodPressureDiary.UI.Models;
 
 namespace BloodPressureDiary.UI.Services;
 
 /// <summary>Persists reminder settings and delegates scheduling to the platform.</summary>
-public sealed class ReminderService(IReminderScheduler _scheduler) : IReminderService
+public sealed class ReminderService(IReminderScheduler _scheduler, IReminderSettingsStorage _storage) : IReminderService
 {
-    private const string _enabledKey = "daily-reminder-enabled";
-    private const string _timeKey = "daily-reminder-time";
+    private const int _legacyReminderId = 7421;
 
-    /// <inheritdoc />
-    public bool IsEnabled => Preferences.Default.Get(_enabledKey, false);
+    /// <summary>Gets whether reminders are enabled.</summary>
+    public async Task<bool> IsEnabledAsync() => (await _storage.GetAsync()).IsEnabled;
 
-    /// <inheritdoc />
-    public TimeSpan ReminderTime => TimeSpan.TryParse(Preferences.Default.Get(_timeKey, "20:00:00"), CultureInfo.InvariantCulture, out var time)
-        ? time
-        : new TimeSpan(20, 0, 0);
+    /// <summary>Gets the configured reminder schedules.</summary>
+    public async Task<IReadOnlyList<ReminderSchedule>> GetRemindersAsync() => (await _storage.GetAsync()).Reminders;
 
-    /// <inheritdoc />
-    public async Task<bool> SetReminderAsync(bool enabled, TimeSpan time, bool requestPermission = true)
+    /// <summary>Updates the reminder preference and schedules.</summary>
+    public async Task<bool> SetRemindersAsync(bool enabled, IReadOnlyList<ReminderSchedule> reminders, bool requestPermission = true)
     {
-        if (!enabled)
+        var maximumInterval = (DateTime.MaxValue.Date - DateTime.Today).Days;
+        if (reminders.Any(reminder => reminder.IntervalDays <= 0 || reminder.IntervalDays > maximumInterval))
         {
-            Preferences.Default.Set(_enabledKey, false);
-            Preferences.Default.Set(_timeKey, time.ToString("c", CultureInfo.InvariantCulture));
-            await _scheduler.CancelAsync();
-            return true;
+            throw new ArgumentException("Each reminder must have a valid positive interval.", nameof(reminders));
         }
 
-        if (!await _scheduler.ScheduleDailyAsync(time, requestPermission))
+        if (enabled && reminders.Count == 0)
+        {
+            throw new ArgumentException("At least one reminder is required.", nameof(reminders));
+        }
+
+        if (reminders.Any(reminder => reminder.Time < TimeSpan.Zero || reminder.Time >= TimeSpan.FromDays(1))
+            || reminders.Select(reminder => reminder.Id).Distinct().Count() != reminders.Count)
+        {
+            throw new ArgumentException("Reminder times and identifiers must be valid and unique.", nameof(reminders));
+        }
+
+        if (enabled && !await _scheduler.CheckPermissionAsync(requestPermission))
         {
             return false;
         }
 
-        Preferences.Default.Set(_timeKey, time.ToString("c", CultureInfo.InvariantCulture));
-        Preferences.Default.Set(_enabledKey, true);
+        var previousSettings = await _storage.GetAsync();
+        var updatedReminders = reminders.Select(reminder =>
+        {
+            var previous = previousSettings.Reminders.FirstOrDefault(item => item.Id == reminder.Id);
+            return new ReminderSchedule
+            {
+                Id = reminder.Id,
+                Time = reminder.Time,
+                IntervalDays = reminder.IntervalDays,
+                StartDate = previousSettings.IsEnabled && previous is not null && previous.Time == reminder.Time && previous.IntervalDays == reminder.IntervalDays
+                    ? previous.StartDate.Date
+                    : DateTime.Today
+            };
+        }).OrderBy(reminder => reminder.Time).ToList();
+
+        await _storage.SaveAsync(new ReminderSettings { IsEnabled = enabled, Reminders = updatedReminders });
+        foreach (var reminder in previousSettings.Reminders)
+        {
+            _scheduler.Cancel(reminder.Id);
+        }
+
+        if (enabled)
+        {
+            foreach (var reminder in updatedReminders)
+            {
+                _scheduler.Schedule(reminder);
+            }
+        }
+
         return true;
     }
 
-    /// <inheritdoc />
+    /// <summary>Restores previously enabled reminders without prompting for permission.</summary>
     public async Task RestoreAsync()
     {
-        if (!IsEnabled)
+        var settings = await _storage.GetAsync();
+        if (!settings.IsEnabled)
         {
-            await _scheduler.CancelAsync();
+            foreach (var reminder in settings.Reminders)
+            {
+                _scheduler.Cancel(reminder.Id);
+            }
+
+            _scheduler.Cancel(_legacyReminderId);
             return;
         }
 
-        var savedTime = Preferences.Default.Get(_timeKey, string.Empty);
-        if (!TimeSpan.TryParse(savedTime, CultureInfo.InvariantCulture, out var time))
+        foreach (var reminder in settings.Reminders)
         {
-            Preferences.Default.Set(_enabledKey, false);
-            await _scheduler.CancelAsync();
-            return;
+            _scheduler.Schedule(reminder);
+        }
+    }
+
+    /// <summary>Schedules the next occurrence of a configured reminder when enabled.</summary>
+    public async Task<bool> RescheduleAsync(int reminderId)
+    {
+        var settings = await _storage.GetAsync();
+        if (!settings.IsEnabled)
+        {
+            return false;
         }
 
-        await _scheduler.ScheduleDailyAsync(time, false);
+        var reminder = settings.Reminders.FirstOrDefault(item => item.Id == reminderId);
+        if (reminder is null)
+        {
+            return false;
+        }
+
+        _scheduler.Schedule(reminder);
+        return true;
     }
 }

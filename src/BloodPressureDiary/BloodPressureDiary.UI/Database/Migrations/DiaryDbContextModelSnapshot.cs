@@ -5,17 +5,17 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BloodPressureDiary.UI.Database.Migrations;
 
-/// <inheritdoc />
+/// <summary>Represents the current database model snapshot.</summary>
 [DbContext(typeof(DiaryDbContext))]
 public sealed class DiaryDbContextModelSnapshot : ModelSnapshot
 {
-    /// <inheritdoc />
+    /// <summary>Builds the saved database model snapshot.</summary>
     protected override void BuildModel(ModelBuilder modelBuilder)
     {
         modelBuilder.HasAnnotation("ProductVersion", "10.0.14")
             .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-        modelBuilder.Entity("BloodPressureDiary.UI.Database.BloodPressureMeasurement", entity =>
+        modelBuilder.Entity("BloodPressureDiary.UI.Database.Entities.BloodPressureMeasurement", entity =>
         {
             entity.Property<int>("Id").ValueGeneratedOnAdd().HasColumnType("INTEGER");
             entity.Property<int>("Diastolic").HasColumnType("INTEGER");

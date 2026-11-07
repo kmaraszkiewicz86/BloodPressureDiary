@@ -1,4 +1,4 @@
-using BloodPressureDiary.UI.Database;
+using BloodPressureDiary.UI.Database.Entities;
 
 namespace BloodPressureDiary.UI.Interfaces;
 

@@ -1,4 +1,4 @@
-using BloodPressureDiary.UI.Database;
+using BloodPressureDiary.UI.Database.Entities;
 using BloodPressureDiary.UI.Interfaces;
 using BloodPressureDiary.UI.Services;
 using Microsoft.Maui.Storage;
@@ -33,7 +33,7 @@ public sealed class FileExportServiceFixture : TestBase, IDisposable
         MeasuredAt = new DateTime(2026, 1, 2, 8, 30, 15), Systolic = 120, Diastolic = 80, Pulse = 65, Notes = notes
     };
 
-    /// <inheritdoc />
+    /// <summary>Deletes the temporary directory used by the current test.</summary>
     public void Dispose() => _state.Dispose();
 
     private sealed class TestState : TestBase, IDisposable
@@ -57,7 +57,7 @@ public sealed class FileExportServiceFixture : TestBase, IDisposable
             Sut = Create<FileExportService>();
         }
 
-        /// <inheritdoc />
+        /// <summary>Deletes the temporary file directory.</summary>
         public void Dispose() => Directory.Delete(DirectoryPath, true);
     }
 }

@@ -4,12 +4,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BloodPressureDiary.UI.Database.Migrations;
 
-/// <inheritdoc />
+/// <summary>Creates the initial blood pressure measurement database schema.</summary>
 [DbContext(typeof(DiaryDbContext))]
 [Migration("20261101000000_InitialCreate")]
 public sealed class InitialCreate : Migration
 {
-    /// <inheritdoc />
+    /// <summary>Creates the measurements table and its date index.</summary>
     protected override void Up(MigrationBuilder migrationBuilder)
     {
         migrationBuilder.CreateTable(
@@ -29,6 +29,6 @@ public sealed class InitialCreate : Migration
         migrationBuilder.CreateIndex(name: "IX_Measurements_MeasuredAt", table: "Measurements", column: "MeasuredAt");
     }
 
-    /// <inheritdoc />
+    /// <summary>Removes the measurements table.</summary>
     protected override void Down(MigrationBuilder migrationBuilder) => migrationBuilder.DropTable(name: "Measurements");
 }

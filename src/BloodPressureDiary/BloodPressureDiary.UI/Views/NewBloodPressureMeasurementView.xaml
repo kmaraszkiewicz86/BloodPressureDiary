@@ -3,40 +3,72 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:localization="clr-namespace:BloodPressureDiary.UI.Resources.Localization"
              x:Class="BloodPressureDiary.UI.Views.NewBloodPressureMeasurementView">
-    <Grid BackgroundColor="#80000000" Padding="16">
-        <Border BackgroundColor="{AppThemeBinding Light=White, Dark=#1F1F1F}"
-                Stroke="{AppThemeBinding Light=#D6DCE4, Dark=#6E6E6E}"
-                VerticalOptions="Center">
+    <ContentView.Resources>
+        <!-- Background and panel for the overlay. -->
+        <Style x:Key="OverlayStyle" TargetType="Grid">
+            <Setter Property="BackgroundColor" Value="#80000000" />
+            <Setter Property="Padding" Value="16" />
+        </Style>
+        <Style x:Key="PanelStyle" TargetType="Border" BasedOn="{StaticResource DefaultBorderStyle}">
+            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=White, Dark=#1F1F1F}" />
+            <Setter Property="Stroke" Value="{AppThemeBinding Light=#D6DCE4, Dark=#6E6E6E}" />
+            <Setter Property="VerticalOptions" Value="Center" />
+        </Style>
+        <Style x:Key="PanelContentStyle" TargetType="VerticalStackLayout">
+            <Setter Property="Padding" Value="16" />
+            <Setter Property="Spacing" Value="14" />
+        </Style>
+        <Style x:Key="PanelHeadingStyle" TargetType="Label" BasedOn="{StaticResource DefaultLabelStyle}">
+            <Setter Property="FontSize" Value="22" />
+            <Setter Property="FontAttributes" Value="Bold" />
+        </Style>
+        <Style x:Key="ActionColumnsStyle" TargetType="Grid">
+            <Setter Property="ColumnSpacing" Value="10" />
+        </Style>
+        <!-- Spacing for the measurement form. -->
+        <Style x:Key="MeasurementFormStyle" TargetType="Grid">
+            <Setter Property="ColumnSpacing" Value="12" />
+            <Setter Property="RowSpacing" Value="8" />
+        </Style>
+        <Style x:Key="MeasurementFieldStyle" TargetType="VerticalStackLayout">
+            <Setter Property="Spacing" Value="4" />
+        </Style>
+    </ContentView.Resources>
+    <!-- Form for adding a blood pressure measurement. -->
+    <Grid Style="{StaticResource OverlayStyle}">
+        <Border Style="{StaticResource PanelStyle}">
             <ScrollView>
-                <VerticalStackLayout Padding="16" Spacing="14">
-                    <Label Text="{x:Static localization:AppResources.NewBloodPressureMeasurement}" FontSize="22" FontAttributes="Bold" />
-                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="12" RowSpacing="8">
-                        <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="4">
+                <VerticalStackLayout Style="{StaticResource PanelContentStyle}">
+                    <Label Text="{x:Static localization:AppResources.NewBloodPressureMeasurement}" Style="{StaticResource PanelHeadingStyle}" />
+                    <!-- Pressure, pulse, date, time, and notes. -->
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" Style="{StaticResource MeasurementFormStyle}">
+                        <VerticalStackLayout Grid.Row="0" Grid.Column="0" Style="{StaticResource MeasurementFieldStyle}">
                             <Label Text="{x:Static localization:AppResources.Systolic}" />
                             <Entry Text="{Binding SystolicInput}" Keyboard="Numeric" />
                         </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="4">
+                        <VerticalStackLayout Grid.Row="0" Grid.Column="1" Style="{StaticResource MeasurementFieldStyle}">
                             <Label Text="{x:Static localization:AppResources.Diastolic}" />
                             <Entry Text="{Binding DiastolicInput}" Keyboard="Numeric" />
                         </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Row="1" Grid.Column="0" Spacing="4">
+                        <VerticalStackLayout Grid.Row="1" Grid.Column="0" Style="{StaticResource MeasurementFieldStyle}">
                             <Label Text="{x:Static localization:AppResources.Pulse}" />
                             <Entry Text="{Binding PulseInput}" Keyboard="Numeric" />
                         </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Row="1" Grid.Column="1" Spacing="4">
+                        <VerticalStackLayout Grid.Row="1" Grid.Column="1" Style="{StaticResource MeasurementFieldStyle}">
                             <Label Text="{x:Static localization:AppResources.Date}" />
                             <DatePicker Date="{Binding MeasuredDate}" />
                         </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Row="2" Grid.Column="0" Spacing="4">
+                        <VerticalStackLayout Grid.Row="2" Grid.Column="0" Style="{StaticResource MeasurementFieldStyle}">
                             <Label Text="{x:Static localization:AppResources.Time}" />
                             <TimePicker Time="{Binding MeasuredTime}" />
                         </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Row="2" Grid.Column="1" Spacing="4">
+                        <VerticalStackLayout Grid.Row="2" Grid.Column="1" Style="{StaticResource MeasurementFieldStyle}">
                             <Label Text="{x:Static localization:AppResources.Notes}" />
                             <Entry Text="{Binding NotesInput}" />
                         </VerticalStackLayout>
                     </Grid>
-                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                    <!-- Save or cancel the new measurement. -->
+                    <Grid ColumnDefinitions="*,*" Style="{StaticResource ActionColumnsStyle}">
                         <Button Grid.Column="0" Text="{x:Static localization:AppResources.Save}" Command="{Binding SaveCommand}" />
                         <Button Grid.Column="1" Text="{x:Static localization:AppResources.Cancel}" Command="{Binding CancelNewItemCommand}" />
                     </Grid>

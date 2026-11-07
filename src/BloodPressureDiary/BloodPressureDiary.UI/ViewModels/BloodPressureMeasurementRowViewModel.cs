@@ -1,5 +1,5 @@
 using System.Globalization;
-using BloodPressureDiary.UI.Database;
+using BloodPressureDiary.UI.Database.Entities;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace BloodPressureDiary.UI.ViewModels;

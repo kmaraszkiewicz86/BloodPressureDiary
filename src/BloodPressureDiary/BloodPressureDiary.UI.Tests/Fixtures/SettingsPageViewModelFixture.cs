@@ -1,4 +1,5 @@
 using BloodPressureDiary.UI.Interfaces;
+using BloodPressureDiary.UI.Models;
 using BloodPressureDiary.UI.ViewModels;
 using NSubstitute;
 
@@ -36,13 +37,14 @@ public sealed class SettingsPageViewModelFixture : TestBase
         public TestState(bool reminderEnabled, TimeSpan reminderTime)
         {
             ReminderService = Freeze<IReminderService>();
-            ReminderService.IsEnabled.Returns(reminderEnabled);
-            ReminderService.ReminderTime.Returns(reminderTime);
+            ReminderService.IsEnabledAsync().Returns(reminderEnabled);
+            ReminderService.GetRemindersAsync().Returns(new[] { new ReminderSchedule { Id = 10001, Time = reminderTime, IntervalDays = 1 } });
             Interaction = Freeze<IUserInteractionService>();
             NavigationService = Freeze<INavigationService>();
             Sut = Create<SettingsPageViewModel>();
             Sut.ReminderEnabled = reminderEnabled;
             Sut.ReminderTime = reminderTime;
+            Sut.IntervalDaysInput = "1";
         }
     }
 }

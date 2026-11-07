@@ -3,21 +3,47 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:localization="clr-namespace:BloodPressureDiary.UI.Resources.Localization"
              x:Class="BloodPressureDiary.UI.Views.ExportOptionsView">
-    <Grid BackgroundColor="#80000000" Padding="16">
-        <Border BackgroundColor="{AppThemeBinding Light=White, Dark=#1F1F1F}"
-                Stroke="{AppThemeBinding Light=#D6DCE4, Dark=#6E6E6E}"
-                VerticalOptions="Center">
+    <ContentView.Resources>
+        <!-- Background and panel for the overlay. -->
+        <Style x:Key="OverlayStyle" TargetType="Grid">
+            <Setter Property="BackgroundColor" Value="#80000000" />
+            <Setter Property="Padding" Value="16" />
+        </Style>
+        <Style x:Key="PanelStyle" TargetType="Border" BasedOn="{StaticResource DefaultBorderStyle}">
+            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=White, Dark=#1F1F1F}" />
+            <Setter Property="Stroke" Value="{AppThemeBinding Light=#D6DCE4, Dark=#6E6E6E}" />
+            <Setter Property="VerticalOptions" Value="Center" />
+        </Style>
+        <Style x:Key="PanelContentStyle" TargetType="VerticalStackLayout">
+            <Setter Property="Padding" Value="16" />
+            <Setter Property="Spacing" Value="14" />
+        </Style>
+        <Style x:Key="PanelHeadingStyle" TargetType="Label" BasedOn="{StaticResource DefaultLabelStyle}">
+            <Setter Property="FontSize" Value="22" />
+            <Setter Property="FontAttributes" Value="Bold" />
+        </Style>
+        <Style x:Key="ActionColumnsStyle" TargetType="Grid">
+            <Setter Property="ColumnSpacing" Value="10" />
+        </Style>
+        <Style x:Key="CenteredLabelStyle" TargetType="Label" BasedOn="{StaticResource DefaultLabelStyle}">
+            <Setter Property="VerticalOptions" Value="Center" />
+        </Style>
+    </ContentView.Resources>
+    <!-- Export options overlay. -->
+    <Grid Style="{StaticResource OverlayStyle}">
+        <Border Style="{StaticResource PanelStyle}">
             <ScrollView>
-                <VerticalStackLayout Padding="16" Spacing="14">
-                    <Label Text="{Binding ExportWindowTitle}" FontSize="22" FontAttributes="Bold" />
+                <VerticalStackLayout Style="{StaticResource PanelContentStyle}">
+                    <Label Text="{Binding ExportWindowTitle}" Style="{StaticResource PanelHeadingStyle}" />
+                    <!-- Choose a preset period or an optional date range. -->
                     <Picker Title="{x:Static localization:AppResources.ExportPeriod}"
                             ItemsSource="{Binding HistoryFilters}"
                             SelectedIndex="{Binding SelectedExportFilter}" />
                     <Grid ColumnDefinitions="*,Auto">
-                        <Label Text="{x:Static localization:AppResources.UseDateRange}" VerticalOptions="Center" />
+                        <Label Text="{x:Static localization:AppResources.UseDateRange}" Style="{StaticResource CenteredLabelStyle}" />
                         <Switch Grid.Column="1" IsToggled="{Binding UseExportDateRange}" />
                     </Grid>
-                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10" IsVisible="{Binding UseExportDateRange}">
+                    <Grid ColumnDefinitions="*,*" Style="{StaticResource ActionColumnsStyle}" IsVisible="{Binding UseExportDateRange}">
                         <VerticalStackLayout Grid.Column="0">
                             <Label Text="{x:Static localization:AppResources.StartDate}" />
                             <DatePicker Date="{Binding ExportStartDate}" MaximumDate="{Binding Today}" />
@@ -27,7 +53,8 @@
                             <DatePicker Date="{Binding ExportEndDate}" MaximumDate="{Binding Today}" />
                         </VerticalStackLayout>
                     </Grid>
-                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                    <!-- Create the file or close the overlay. -->
+                    <Grid ColumnDefinitions="*,*" Style="{StaticResource ActionColumnsStyle}">
                         <Button Grid.Column="0" Text="{x:Static localization:AppResources.CreateFile}" Command="{Binding ConfirmExportCommand}" />
                         <Button Grid.Column="1" Text="{x:Static localization:AppResources.Cancel}" Command="{Binding CancelExportCommand}" />
                     </Grid>

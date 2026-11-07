@@ -54,9 +54,15 @@
   <data name="DeleteFailed" xml:space="preserve"><value>The measurement could not be deleted.</value></data>
   <data name="LoadFailed" xml:space="preserve"><value>Measurements could not be loaded.</value></data>
   <data name="ExportFailed" xml:space="preserve"><value>The file could not be created.</value></data>
-  <data name="ReminderTitle" xml:space="preserve"><value>Daily measurement reminder</value></data>
-  <data name="DailyReminder" xml:space="preserve"><value>Remind me every day</value></data>
+  <data name="ReminderTitle" xml:space="preserve"><value>Measurement reminders</value></data>
+  <data name="EnableReminders" xml:space="preserve"><value>Enable reminders</value></data>
   <data name="ReminderTime" xml:space="preserve"><value>Reminder time</value></data>
+  <data name="ReminderInterval" xml:space="preserve"><value>Interval for this reminder (days)</value></data>
+  <data name="ReminderIntervalFormat" xml:space="preserve"><value>Interval (days): {0}</value></data>
+  <data name="AddReminderTime" xml:space="preserve"><value>Add reminder</value></data>
+  <data name="DuplicateReminderTime" xml:space="preserve"><value>This reminder time has already been added.</value></data>
+  <data name="InvalidReminderInterval" xml:space="preserve"><value>Enter a valid positive number of days.</value></data>
+  <data name="ReminderTimeRequired" xml:space="preserve"><value>Add at least one reminder time.</value></data>
   <data name="ReminderPermissionDenied" xml:space="preserve"><value>Notifications are not allowed. Enable notifications for this app in Android settings.</value></data>
   <data name="ReminderSaved" xml:space="preserve"><value>Reminder settings saved.</value></data>
   <data name="ReportTitle" xml:space="preserve"><value>Blood Pressure Measurements</value></data>

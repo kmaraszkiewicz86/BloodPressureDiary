@@ -54,9 +54,15 @@
   <data name="DeleteFailed" xml:space="preserve"><value>Nie udało się usunąć pomiaru.</value></data>
   <data name="LoadFailed" xml:space="preserve"><value>Nie udało się wczytać pomiarów.</value></data>
   <data name="ExportFailed" xml:space="preserve"><value>Nie udało się utworzyć pliku.</value></data>
-  <data name="ReminderTitle" xml:space="preserve"><value>Codzienne przypomnienie o pomiarze</value></data>
-  <data name="DailyReminder" xml:space="preserve"><value>Przypominaj codziennie</value></data>
+  <data name="ReminderTitle" xml:space="preserve"><value>Przypomnienia o pomiarze</value></data>
+  <data name="EnableReminders" xml:space="preserve"><value>Włącz przypomnienia</value></data>
   <data name="ReminderTime" xml:space="preserve"><value>Godzina przypomnienia</value></data>
+  <data name="ReminderInterval" xml:space="preserve"><value>Odstęp dla tego przypomnienia (dni)</value></data>
+  <data name="ReminderIntervalFormat" xml:space="preserve"><value>Odstęp (dni): {0}</value></data>
+  <data name="AddReminderTime" xml:space="preserve"><value>Dodaj przypomnienie</value></data>
+  <data name="DuplicateReminderTime" xml:space="preserve"><value>Ta godzina przypomnienia została już dodana.</value></data>
+  <data name="InvalidReminderInterval" xml:space="preserve"><value>Wpisz poprawną dodatnią liczbę dni.</value></data>
+  <data name="ReminderTimeRequired" xml:space="preserve"><value>Dodaj co najmniej jedną godzinę przypomnienia.</value></data>
   <data name="ReminderPermissionDenied" xml:space="preserve"><value>Powiadomienia są zablokowane. Włącz je dla tej aplikacji w ustawieniach Androida.</value></data>
   <data name="ReminderSaved" xml:space="preserve"><value>Zapisano ustawienia przypomnienia.</value></data>
   <data name="ReportTitle" xml:space="preserve"><value>Pomiary ciśnienia</value></data>

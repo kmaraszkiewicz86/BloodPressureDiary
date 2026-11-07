@@ -1,8 +1,9 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <ResourceDictionary 
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
+    <!-- Shared styles for application controls. -->
     <Style TargetType="ActivityIndicator">
         <Setter Property="Color" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
     </Style>
@@ -12,11 +13,14 @@
         <Setter Property="SelectedIndicatorColor" Value="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray100}}"/>
     </Style>
 
-    <Style TargetType="Border">
+    <!-- Reusable base style for borders. -->
+    <Style x:Key="DefaultBorderStyle" TargetType="Border">
         <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray500}}" />
         <Setter Property="StrokeShape" Value="Rectangle"/>
         <Setter Property="StrokeThickness" Value="1"/>
     </Style>
+
+    <Style TargetType="Border" BasedOn="{StaticResource DefaultBorderStyle}" />
 
     <Style TargetType="BoxView">
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray200}}" />
@@ -109,7 +113,8 @@
         </Setter>
     </Style>
 
-    <Style TargetType="Entry">
+    <!-- Reusable base style for text entry. -->
+    <Style x:Key="DefaultEntryStyle" TargetType="Entry">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="FontFamily" Value="OpenSansRegular"/>
@@ -130,6 +135,8 @@
             </VisualStateGroupList>
         </Setter>
     </Style>
+
+    <Style TargetType="Entry" BasedOn="{StaticResource DefaultEntryStyle}" />
 
     <Style TargetType="ImageButton">
         <Setter Property="Opacity" Value="1" />
@@ -153,7 +160,8 @@
         </Setter>
     </Style>
 
-    <Style TargetType="Label">
+    <!-- Reusable base style for labels. -->
+    <Style x:Key="DefaultLabelStyle" TargetType="Label">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="FontFamily" Value="OpenSansRegular" />
@@ -171,6 +179,8 @@
             </VisualStateGroupList>
         </Setter>
     </Style>
+
+    <Style TargetType="Label" BasedOn="{StaticResource DefaultLabelStyle}" />
 
     <Style TargetType="Label" x:Key="Headline">
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource MidnightBlue}, Dark={StaticResource White}}" />
@@ -400,6 +410,7 @@
     </Style>
     -->
 
+    <!-- Shared page and navigation styles. -->
     <Style TargetType="Page" ApplyToDerivedTypes="True">
         <Setter Property="Padding" Value="0"/>
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource OffBlack}}" />

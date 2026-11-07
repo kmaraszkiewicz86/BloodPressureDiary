@@ -2,7 +2,6 @@ using BloodPressureDiary.UI.Interfaces;
 using BloodPressureDiary.UI.Resources.Localization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui;
-using Microsoft.Maui.Storage;
 using NativeNotificationManager = global::Android.App.NotificationManager;
 using NativeNotification = global::Android.App.Notification;
 using NativeNotificationChannel = global::Android.App.NotificationChannel;
@@ -17,17 +16,17 @@ using NativeLog = global::Android.Util.Log;
 
 namespace BloodPressureDiary.UI.Platforms.Android;
 
-/// <summary>Displays the daily blood pressure reminder notification.</summary>
+/// <summary>Displays the blood pressure reminder notification.</summary>
 [global::Android.Content.BroadcastReceiver(Enabled = true, Exported = false)]
 public sealed class DailyReminderReceiver : NativeReceiver
 {
     private const string _channelId = "blood-pressure-reminders";
     private const int _notificationId = 7421;
 
-    /// <inheritdoc />
+    /// <summary>Reschedules the reminder and shows a notification when no measurement exists today.</summary>
     public override async void OnReceive(NativeContext? context, NativeIntent? intent)
     {
-        if (context is null || !Preferences.Default.Get("daily-reminder-enabled", false))
+        if (context is null)
         {
             return;
         }
@@ -42,8 +41,15 @@ public sealed class DailyReminderReceiver : NativeReceiver
             }
 
             using var scope = services.CreateScope();
+            var reminderId = intent?.GetIntExtra(DailyReminderAlarm.ReminderIdExtra, DailyReminderAlarm.LegacyReminderId) ?? DailyReminderAlarm.LegacyReminderId;
+            var schedules = scope.ServiceProvider.GetRequiredService<IReminderService>();
+            if (!await schedules.RescheduleAsync(reminderId))
+            {
+                return;
+            }
+
             var reminderService = scope.ServiceProvider.GetRequiredService<IBloodPressureMeasurementReminderService>();
-            if (!await reminderService.ShouldShowReminderAsync() || !Preferences.Default.Get("daily-reminder-enabled", false))
+            if (!await reminderService.ShouldShowReminderAsync() || !await schedules.IsEnabledAsync())
             {
                 return;
             }

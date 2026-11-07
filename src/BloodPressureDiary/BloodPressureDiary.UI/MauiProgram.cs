@@ -1,6 +1,5 @@
 using BloodPressureDiary.UI.Database;
 using BloodPressureDiary.UI.Extensions;
-using BloodPressureDiary.UI.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -33,7 +32,6 @@ public static class MauiProgram
             scope.ServiceProvider.GetRequiredService<DiaryDbContext>().Database.Migrate();
         }
 
-        app.Services.GetRequiredService<IReminderService>().RestoreAsync().GetAwaiter().GetResult();
         return app;
     }
 }

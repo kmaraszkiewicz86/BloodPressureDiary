@@ -1,4 +1,5 @@
 using BloodPressureDiary.UI.Database;
+using BloodPressureDiary.UI.Database.Entities;
 using BloodPressureDiary.UI.Services;
 
 namespace BloodPressureDiary.UI.Tests.Fixtures;
@@ -32,6 +33,6 @@ public sealed class BloodPressureMeasurementRepositoryFixture : TestBase, IDispo
         Sut = new BloodPressureMeasurementRepository(_context);
     }
 
-    /// <inheritdoc />
+    /// <summary>Disposes the current database context.</summary>
     public void Dispose() => _context?.Dispose();
 }

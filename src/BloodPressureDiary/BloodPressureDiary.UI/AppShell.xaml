@@ -6,17 +6,28 @@
     xmlns:local="clr-namespace:BloodPressureDiary.UI"
     xmlns:views="clr-namespace:BloodPressureDiary.UI.Views"
     xmlns:localization="clr-namespace:BloodPressureDiary.UI.Resources.Localization"
-    Title="{x:Static localization:AppResources.AppTitle}"
-    FlyoutBackgroundColor="{AppThemeBinding Light=White, Dark=#1F1F1F}"
-    Shell.BackgroundColor="{AppThemeBinding Light=White, Dark=#1F1F1F}"
-    Shell.ForegroundColor="{AppThemeBinding Light=#212121, Dark=White}"
-    Shell.TitleColor="{AppThemeBinding Light=#212121, Dark=White}"
-    Shell.UnselectedColor="{AppThemeBinding Light=#404040, Dark=#C8C8C8}"
-    Shell.TabBarBackgroundColor="{AppThemeBinding Light=White, Dark=#1F1F1F}"
-    Shell.TabBarForegroundColor="{AppThemeBinding Light=#512BD4, Dark=White}"
-    Shell.TabBarTitleColor="{AppThemeBinding Light=#512BD4, Dark=White}"
-    Shell.TabBarUnselectedColor="{AppThemeBinding Light=#404040, Dark=#C8C8C8}">
+    Title="{x:Static localization:AppResources.AppTitle}">
+    <Shell.Resources>
+        <!-- Navigation colors for light and dark themes. -->
+        <Style x:Key="AppShellStyle" TargetType="Shell">
+            <Setter Property="FlyoutBackgroundColor" Value="{AppThemeBinding Light=White, Dark=#1F1F1F}" />
+            <Setter Property="Shell.BackgroundColor" Value="{AppThemeBinding Light=White, Dark=#1F1F1F}" />
+            <Setter Property="Shell.ForegroundColor" Value="{AppThemeBinding Light=#212121, Dark=White}" />
+            <Setter Property="Shell.TitleColor" Value="{AppThemeBinding Light=#212121, Dark=White}" />
+            <Setter Property="Shell.DisabledColor" Value="{AppThemeBinding Light=#C8C8C8, Dark=#141414}" />
+            <Setter Property="Shell.NavBarHasShadow" Value="False" />
+            <Setter Property="Shell.UnselectedColor" Value="{AppThemeBinding Light=#404040, Dark=#C8C8C8}" />
+            <Setter Property="Shell.TabBarBackgroundColor" Value="{AppThemeBinding Light=White, Dark=#1F1F1F}" />
+            <Setter Property="Shell.TabBarForegroundColor" Value="{AppThemeBinding Light=#512BD4, Dark=White}" />
+            <Setter Property="Shell.TabBarTitleColor" Value="{AppThemeBinding Light=#512BD4, Dark=White}" />
+            <Setter Property="Shell.TabBarUnselectedColor" Value="{AppThemeBinding Light=#404040, Dark=#C8C8C8}" />
+        </Style>
+    </Shell.Resources>
+    <Shell.Style>
+        <StaticResource Key="AppShellStyle" />
+    </Shell.Style>
 
+    <!-- Navigation entries for measurements and settings. -->
     <ShellContent
         x:Name="MainTab"
         Title="{x:Static localization:AppResources.HomeTab}"

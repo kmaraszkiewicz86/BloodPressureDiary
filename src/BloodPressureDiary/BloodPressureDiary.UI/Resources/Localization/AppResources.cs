@@ -110,10 +110,22 @@ public static class AppResources
     public static string ExportFailed => Get(nameof(ExportFailed));
     /// <summary>Gets the reminder title.</summary>
     public static string ReminderTitle => Get(nameof(ReminderTitle));
-    /// <summary>Gets the daily reminder label.</summary>
-    public static string DailyReminder => Get(nameof(DailyReminder));
+    /// <summary>Gets the enable reminders label.</summary>
+    public static string EnableReminders => Get(nameof(EnableReminders));
     /// <summary>Gets the reminder time label.</summary>
     public static string ReminderTime => Get(nameof(ReminderTime));
+    /// <summary>Gets the reminder interval label.</summary>
+    public static string ReminderInterval => Get(nameof(ReminderInterval));
+    /// <summary>Gets the reminder interval display format.</summary>
+    public static string ReminderIntervalFormat => Get(nameof(ReminderIntervalFormat));
+    /// <summary>Gets the add reminder time label.</summary>
+    public static string AddReminderTime => Get(nameof(AddReminderTime));
+    /// <summary>Gets the duplicate reminder time message.</summary>
+    public static string DuplicateReminderTime => Get(nameof(DuplicateReminderTime));
+    /// <summary>Gets the invalid reminder interval message.</summary>
+    public static string InvalidReminderInterval => Get(nameof(InvalidReminderInterval));
+    /// <summary>Gets the message requiring a reminder time.</summary>
+    public static string ReminderTimeRequired => Get(nameof(ReminderTimeRequired));
     /// <summary>Gets the notification permission message.</summary>
     public static string ReminderPermissionDenied => Get(nameof(ReminderPermissionDenied));
     /// <summary>Gets the reminder saved message.</summary>

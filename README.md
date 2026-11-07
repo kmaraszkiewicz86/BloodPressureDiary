@@ -16,6 +16,9 @@ BloodPressureDiary is a .NET MAUI application for recording blood pressure measu
 
 Provides the application window.
 
+- `CreateWindow()` (protected) — Creates the application window and restores reminder alarms when it is created.
+- `OnWindowCreated()` (private) — Restores reminder alarms when the application window is created.
+
 ### `MauiProgram`
 
 Configures and builds the MAUI application.
@@ -27,6 +30,11 @@ Configures and builds the MAUI application.
 Registers the application database, services, view models, and views.
 
 - `AddBloodPressureDiaryServices()` — Registers the dependencies used by the blood pressure diary.
+- `AddDatabase()` (private) — Registers the SQLite database and measurement repository.
+- `AddServices()` (private) — Registers the application services.
+- `AddPlatformServices()` (private) — Registers MAUI platform APIs and the Android reminder scheduler.
+- `AddViewModels()` (private) — Registers the view models.
+- `AddViews()` (private) — Registers the application pages and shell.
 
 ### `BloodPressureMeasurement`
 
@@ -39,15 +47,42 @@ Represents a manually recorded blood pressure measurement.
 - `Notes` — Gets or sets the optional note.
 - `MeasuredAt` — Gets or sets the local date and time of the measurement.
 
+### `ReminderSchedule`
+
+Represents a recurring blood pressure measurement reminder.
+
+- `Id` — Gets or sets the reminder identifier.
+- `Time` — Gets or sets the reminder time.
+- `DisplayTime` — Gets the reminder time for display.
+- `IntervalDays` — Gets or sets the interval between reminder days.
+- `DisplayInterval` — Gets the reminder interval for display.
+- `StartDate` — Gets or sets the first day of the reminder schedule.
+
 ### `DiaryDbContext`
 
 Provides access to the local blood pressure diary database.
 
-- `BloodPressureMeasurements` — Gets the saved blood pressure measurements.
+- `BloodPressureMeasurements` — Gets the saved blood pressure measurements. The context provides the set without a setter or separate initialization; measurements can still be added, updated, and removed.
+- `OnModelCreating()` (protected) — Applies the blood pressure measurement entity configuration.
 
 ### `BloodPressureMeasurementConfiguration`
 
 Configures the SQLite mapping for blood pressure measurements.
+
+- `Configure()` — Configures the database mapping for blood pressure measurements.
+
+### `InitialCreate`
+
+Creates the initial blood pressure measurement database schema.
+
+- `Up()` (protected) — Creates the measurements table and its date index.
+- `Down()` (protected) — Removes the measurements table.
+
+### `DiaryDbContextModelSnapshot`
+
+Represents the current database model snapshot.
+
+- `BuildModel()` (protected) — Builds the saved database model snapshot.
 
 ### `MainPageViewModel`
 
@@ -136,13 +171,22 @@ Holds a measurement and its temporary inline edit values.
 
 ### `SettingsPageViewModel`
 
-Manages the daily measurement reminder settings.
+Manages blood pressure measurement reminder settings.
 
-- `ReminderEnabled` — Gets or sets whether the daily reminder is enabled.
-- `ReminderTime` — Gets or sets the daily reminder time.
+- `ReminderEnabled` — Gets or sets whether reminders are enabled.
+- `ReminderTime` — Gets or sets the time to add to the reminder schedule.
+- `IntervalDaysInput` — Gets or sets the interval in days for the reminder being added.
+- `Reminders` — Gets the reminder times being edited.
+- `IsLoaded` — Gets whether the saved settings have been loaded.
+- `LoadCommand` — Gets the command to load saved settings.
+- `LoadAsync()` (private) — Loads the saved reminder settings.
+- `AddReminderCommand` — Gets the command to add a reminder time.
+- `RemoveReminderCommand` — Gets the command to remove a reminder time.
 - `SaveCommand` — Gets the save settings command.
 - `OpenBloodPressureMeasurementsCommand` — Gets the measurements navigation command.
-- `SaveAsync()` (private) — Saves the reminder settings and displays the result.
+- `AddReminderAsync()` (private) — Adds the selected reminder time if it is not already present.
+- `RemoveReminder()` (private) — Removes the selected reminder time.
+- `SaveAsync()` (private) — Validates and saves the reminder settings and displays the result.
 
 ### `BloodPressureMeasurementRepository`
 
@@ -196,41 +240,61 @@ Uses the current Shell to display user prompts.
 
 Persists reminder settings and delegates scheduling to the platform.
 
-- `IsEnabled` — Gets whether daily reminders are enabled.
-- `ReminderTime` — Gets the configured reminder time.
-- `SetReminderAsync()` — Updates the reminder preference and schedule.
-- `RestoreAsync()` — Restores a previously enabled reminder without prompting for permission.
+- `IsEnabledAsync()` — Gets whether reminders are enabled.
+- `GetRemindersAsync()` — Gets the configured reminder schedules.
+- `SetRemindersAsync()` — Updates the reminder preference and schedules.
+- `RestoreAsync()` — Restores previously enabled reminders without prompting for permission.
+- `RescheduleAsync()` — Schedules the next occurrence of a configured reminder when enabled.
+
+
+### `ReminderSettings`
+
+Represents the saved reminder settings.
+
+- `IsEnabled` — Gets or sets whether reminders are enabled.
+- `Reminders` — Gets or sets the saved reminder schedules.
+
+### `ReminderSettingsStorage`
+
+Stores reminder settings in a file and reads settings from previous versions.
+
+- `GetAsync()` — Reads saved reminder settings, including settings from earlier versions.
+- `SaveAsync()` — Saves reminder settings.
+- `WriteAsync()` (private) — Writes settings to a temporary file before replacing the saved file.
+
+### `ReminderScheduleCalculator`
+
+Calculates recurring reminder dates from the saved start date.
+
+- `GetNextOccurrence()` — Returns the next occurrence after the specified local date and time.
 
 ### `AndroidReminderScheduler`
 
-Schedules the daily measurement notification with Android AlarmManager.
+Schedules measurement notifications with Android AlarmManager.
 
-- `ScheduleDailyAsync()` — Schedules a daily notification and reports whether notifications can be shown.
-- `CancelAsync()` — Cancels the daily notification.
+- `CheckPermissionAsync()` — Checks whether notifications can be shown, requesting permission when required.
+- `Schedule()` — Schedules the next occurrence of a reminder.
+- `Cancel()` — Cancels a reminder by identifier.
 
 ### `DailyReminderAlarm` (internal)
 
 Schedules and cancels Android reminder alarms.
 
-- `Schedule()` (internal) — Schedules the next daily reminder alarm.
-- `Cancel()` (internal) — Cancels the daily reminder alarm.
-- `GetPendingIntent()` (private) — Creates the pending intent for the daily reminder receiver.
-
-### `UnsupportedReminderScheduler`
-
-Provides a no-op reminder implementation on platforms without local reminder support.
-
-- `ScheduleDailyAsync()` — Schedules a daily notification and reports whether notifications can be shown.
-- `CancelAsync()` — Cancels the daily notification.
+- `Schedule()` (internal) — Schedules the next reminder alarm.
+- `Cancel()` (internal) — Cancels a reminder alarm by identifier.
+- `GetPendingIntent()` (private) — Creates the pending intent for the reminder receiver.
 
 ### `DailyReminderBootReceiver`
 
-Restores the daily alarm after an Android device restart.
+Restores reminder alarms after an Android device restart.
+
+- `OnReceive()` — Restores reminder alarms after the Android device finishes restarting.
 
 ### `DailyReminderReceiver`
 
-Displays the daily blood pressure reminder notification.
+Displays the blood pressure reminder notification.
 
+- `OnReceive()` — Reschedules the reminder and shows a notification when no measurement exists today.
 - `ShowNotification()` (private) — Displays the measurement reminder notification.
 
 ### `AppResources`
@@ -288,8 +352,14 @@ Provides localized application strings.
 - `LoadFailed` — Gets the load failure message.
 - `ExportFailed` — Gets the export failure message.
 - `ReminderTitle` — Gets the reminder title.
-- `DailyReminder` — Gets the daily reminder label.
+- `EnableReminders` — Gets the enable reminders label.
 - `ReminderTime` — Gets the reminder time label.
+- `ReminderInterval` — Gets the reminder interval label.
+- `ReminderIntervalFormat` — Gets the reminder interval display format.
+- `AddReminderTime` — Gets the add reminder time label.
+- `DuplicateReminderTime` — Gets the duplicate reminder time message.
+- `InvalidReminderInterval` — Gets the invalid reminder interval message.
+- `ReminderTimeRequired` — Gets the message requiring a reminder time.
 - `ReminderPermissionDenied` — Gets the notification permission message.
 - `ReminderSaved` — Gets the reminder saved message.
 - `ReportTitle` — Gets the report title.
@@ -314,6 +384,9 @@ BloodPressureDiary to aplikacja .NET MAUI do zapisywania pomiarów ciśnienia na
 
 Udostępnia okno aplikacji.
 
+- `CreateWindow()` (chroniona) — Tworzy okno aplikacji i przywraca alarmy przypomnień po jego utworzeniu.
+- `OnWindowCreated()` (prywatna) — Przywraca alarmy przypomnień po utworzeniu okna aplikacji.
+
 #### `MauiProgram`
 
 Konfiguruje i buduje aplikację MAUI.
@@ -325,6 +398,11 @@ Konfiguruje i buduje aplikację MAUI.
 Rejestruje bazę danych aplikacji, serwisy, ViewModele i widoki.
 
 - `AddBloodPressureDiaryServices()` — Rejestruje zależności używane przez dzienniczek ciśnienia.
+- `AddDatabase()` (prywatna) — Rejestruje bazę SQLite i repozytorium pomiarów.
+- `AddServices()` (prywatna) — Rejestruje serwisy aplikacji.
+- `AddPlatformServices()` (prywatna) — Rejestruje API platformowe MAUI i harmonogram przypomnień Androida.
+- `AddViewModels()` (prywatna) — Rejestruje ViewModele.
+- `AddViews()` (prywatna) — Rejestruje strony aplikacji i Shell.
 
 #### `BloodPressureMeasurement`
 
@@ -337,15 +415,42 @@ Reprezentuje ręcznie zapisany pomiar ciśnienia.
 - `Notes` — Pobiera lub ustawia opcjonalną notatkę.
 - `MeasuredAt` — Pobiera lub ustawia lokalną datę i godzinę pomiaru.
 
+#### `ReminderSchedule`
+
+Reprezentuje cykliczne przypomnienie o pomiarze ciśnienia.
+
+- `Id` — Pobiera lub ustawia identyfikator przypomnienia.
+- `Time` — Pobiera lub ustawia godzinę przypomnienia.
+- `DisplayTime` — Pobiera godzinę przypomnienia do wyświetlenia.
+- `IntervalDays` — Pobiera lub ustawia odstęp między dniami przypomnień.
+- `DisplayInterval` — Pobiera odstęp przypomnienia do wyświetlenia.
+- `StartDate` — Pobiera lub ustawia pierwszy dzień harmonogramu przypomnienia.
+
 #### `DiaryDbContext`
 
 Udostępnia dostęp do lokalnej bazy danych dzienniczka ciśnienia.
 
-- `BloodPressureMeasurements` — Pobiera zapisane pomiary ciśnienia.
+- `BloodPressureMeasurements` — Pobiera zapisane pomiary ciśnienia. Kontekst udostępnia zbiór bez settera i osobnej inicjalizacji; pomiary nadal można dodawać, aktualizować i usuwać.
+- `OnModelCreating()` (chroniona) — Stosuje konfigurację encji pomiarów ciśnienia.
 
 #### `BloodPressureMeasurementConfiguration`
 
 Konfiguruje mapowanie SQLite dla pomiarów ciśnienia.
+
+- `Configure()` — Konfiguruje mapowanie bazy danych dla pomiarów ciśnienia.
+
+#### `InitialCreate`
+
+Tworzy początkowy schemat bazy danych pomiarów ciśnienia.
+
+- `Up()` (chroniona) — Tworzy tabelę pomiarów i indeks daty.
+- `Down()` (chroniona) — Usuwa tabelę pomiarów.
+
+#### `DiaryDbContextModelSnapshot`
+
+Reprezentuje bieżący zapisany model bazy danych.
+
+- `BuildModel()` (chroniona) — Buduje zapisany model bazy danych.
 
 #### `MainPageViewModel`
 
@@ -434,13 +539,22 @@ Przechowuje pomiar i jego tymczasowe wartości edycji w wierszu.
 
 #### `SettingsPageViewModel`
 
-Zarządza ustawieniami codziennego przypomnienia o pomiarze.
+Zarządza ustawieniami przypomnień o pomiarze ciśnienia.
 
-- `ReminderEnabled` — Pobiera lub ustawia informację, czy codzienne przypomnienie jest włączone.
-- `ReminderTime` — Pobiera lub ustawia godzinę codziennego przypomnienia.
+- `ReminderEnabled` — Pobiera lub ustawia informację, czy przypomnienia są włączone.
+- `ReminderTime` — Pobiera lub ustawia godzinę do dodania do harmonogramu przypomnień.
+- `IntervalDaysInput` — Pobiera lub ustawia odstęp w dniach dla dodawanego przypomnienia.
+- `Reminders` — Pobiera edytowane godziny przypomnień.
+- `IsLoaded` — Pobiera informację, czy zapisane ustawienia zostały wczytane.
+- `LoadCommand` — Pobiera polecenie wczytania zapisanych ustawień.
+- `LoadAsync()` (prywatna) — Wczytuje zapisane ustawienia przypomnień.
+- `AddReminderCommand` — Pobiera polecenie dodania godziny przypomnienia.
+- `RemoveReminderCommand` — Pobiera polecenie usunięcia godziny przypomnienia.
 - `SaveCommand` — Pobiera polecenie zapisu ustawień.
 - `OpenBloodPressureMeasurementsCommand` — Pobiera polecenie przejścia do pomiarów.
-- `SaveAsync()` (prywatna) — Zapisuje ustawienia przypomnienia i wyświetla wynik.
+- `AddReminderAsync()` (prywatna) — Dodaje wybraną godzinę przypomnienia, jeśli jeszcze jej nie ma.
+- `RemoveReminder()` (prywatna) — Usuwa wybraną godzinę przypomnienia.
+- `SaveAsync()` (prywatna) — Sprawdza i zapisuje ustawienia przypomnień oraz wyświetla wynik.
 
 #### `BloodPressureMeasurementRepository`
 
@@ -494,41 +608,60 @@ Używa bieżącego Shell do wyświetlania komunikatów użytkownika.
 
 Zapisuje ustawienia przypomnienia i przekazuje planowanie do platformy.
 
-- `IsEnabled` — Pobiera informację, czy codzienne przypomnienia są włączone.
-- `ReminderTime` — Pobiera skonfigurowaną godzinę przypomnienia.
-- `SetReminderAsync()` — Aktualizuje ustawienie i harmonogram przypomnienia.
-- `RestoreAsync()` — Przywraca wcześniej włączone przypomnienie bez pytania o uprawnienie.
+- `IsEnabledAsync()` — Pobiera informację, czy przypomnienia są włączone.
+- `GetRemindersAsync()` — Pobiera skonfigurowane harmonogramy przypomnień.
+- `SetRemindersAsync()` — Aktualizuje ustawienie i harmonogramy przypomnień.
+- `RestoreAsync()` — Przywraca wcześniej włączone przypomnienia bez pytania o uprawnienie.
+- `RescheduleAsync()` — Planuje następne wystąpienie skonfigurowanego przypomnienia, jeśli jest włączone.
+
+
+#### `ReminderSettings`
+
+Reprezentuje zapisane ustawienia przypomnień.
+
+- `IsEnabled` — Pobiera lub ustawia informację, czy przypomnienia są włączone.
+- `Reminders` — Pobiera lub ustawia zapisane harmonogramy przypomnień.
+
+#### `ReminderSettingsStorage`
+
+Przechowuje ustawienia przypomnień w pliku i odczytuje ustawienia poprzednich wersji.
+
+- `GetAsync()` — Odczytuje zapisane ustawienia przypomnień, w tym ustawienia wcześniejszych wersji.
+- `SaveAsync()` — Zapisuje ustawienia przypomnień.
+- `WriteAsync()` (prywatna) — Zapisuje ustawienia do pliku tymczasowego przed zastąpieniem zapisanego pliku.
+
+#### `ReminderScheduleCalculator`
+Oblicza daty cyklicznych przypomnień na podstawie zapisanej daty rozpoczęcia.
+
+- `GetNextOccurrence()` — Zwraca następne wystąpienie po podanej lokalnej dacie i godzinie.
 
 #### `AndroidReminderScheduler`
 
-Planuje codzienne powiadomienie o pomiarze za pomocą Android AlarmManager.
+Planuje powiadomienia o pomiarach za pomocą Android AlarmManager.
 
-- `ScheduleDailyAsync()` — Planuje codzienne powiadomienie i zwraca informację, czy można wyświetlać powiadomienia.
-- `CancelAsync()` — Anuluje codzienne powiadomienie.
+- `CheckPermissionAsync()` — Sprawdza, czy można wyświetlać powiadomienia, i w razie potrzeby prosi o uprawnienie.
+- `Schedule()` — Planuje następne wystąpienie przypomnienia.
+- `Cancel()` — Anuluje przypomnienie według identyfikatora.
 
 #### `DailyReminderAlarm` (wewnętrzna)
 
 Planuje i anuluje alarmy przypomnień Androida.
 
-- `Schedule()` (wewnętrzna) — Planuje następny alarm codziennego przypomnienia.
-- `Cancel()` (wewnętrzna) — Anuluje alarm codziennego przypomnienia.
-- `GetPendingIntent()` (prywatna) — Tworzy oczekujący zamiar dla odbiornika codziennego przypomnienia.
-
-#### `UnsupportedReminderScheduler`
-
-Udostępnia pustą implementację przypomnień na platformach bez obsługi lokalnych przypomnień.
-
-- `ScheduleDailyAsync()` — Planuje codzienne powiadomienie i zwraca informację, czy można wyświetlać powiadomienia.
-- `CancelAsync()` — Anuluje codzienne powiadomienie.
+- `Schedule()` (wewnętrzna) — Planuje następny alarm przypomnienia.
+- `Cancel()` (wewnętrzna) — Anuluje alarm przypomnienia według identyfikatora.
+- `GetPendingIntent()` (prywatna) — Tworzy oczekujący zamiar dla odbiornika przypomnienia.
 
 #### `DailyReminderBootReceiver`
 
-Przywraca codzienny alarm po ponownym uruchomieniu urządzenia z Androidem.
+Przywraca alarmy przypomnień po ponownym uruchomieniu urządzenia z Androidem.
+
+- `OnReceive()` — Przywraca alarmy przypomnień po zakończeniu ponownego uruchamiania urządzenia z Androidem.
 
 #### `DailyReminderReceiver`
 
-Wyświetla powiadomienie z codziennym przypomnieniem o pomiarze ciśnienia.
+Wyświetla powiadomienie z przypomnieniem o pomiarze ciśnienia.
 
+- `OnReceive()` — Planuje kolejne przypomnienie i wyświetla powiadomienie, gdy dzisiaj nie ma pomiaru.
 - `ShowNotification()` (prywatna) — Wyświetla powiadomienie przypominające o pomiarze.
 
 #### `AppResources`
@@ -586,8 +719,14 @@ Udostępnia zlokalizowane teksty aplikacji.
 - `LoadFailed` — Pobiera komunikat o niepowodzeniu wczytywania.
 - `ExportFailed` — Pobiera komunikat o niepowodzeniu eksportu.
 - `ReminderTitle` — Pobiera tytuł przypomnienia.
-- `DailyReminder` — Pobiera etykietę codziennego przypomnienia.
+- `EnableReminders` — Pobiera etykietę włączania przypomnień.
 - `ReminderTime` — Pobiera etykietę godziny przypomnienia.
+- `ReminderInterval` — Pobiera etykietę odstępu przypomnień.
+- `ReminderIntervalFormat` — Pobiera format wyświetlania odstępu przypomnienia.
+- `AddReminderTime` — Pobiera etykietę dodawania godziny przypomnienia.
+- `DuplicateReminderTime` — Pobiera komunikat o powtórzonej godzinie przypomnienia.
+- `InvalidReminderInterval` — Pobiera komunikat o nieprawidłowym odstępie przypomnień.
+- `ReminderTimeRequired` — Pobiera komunikat wymagający podania godziny przypomnienia.
 - `ReminderPermissionDenied` — Pobiera komunikat dotyczący uprawnienia do powiadomień.
 - `ReminderSaved` — Pobiera komunikat o zapisaniu przypomnienia.
 - `ReportTitle` — Pobiera tytuł raportu.

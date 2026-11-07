@@ -13,6 +13,7 @@ All paths are relative to the repository root.
 - The application MUST provide complete Polish and English translations: English strings in `Resources/Localization/AppResources.resx` and Polish strings in `AppResources.pl.resx`. All UI text, validation messages, dialogs, and notifications must use these resources; both files must contain complete, actual translations.
 - Write code and comments in English. Follow Microsoft naming conventions, enable nullable reference types, and use async/await.
 - Add English XML documentation comments to handwritten public types and members.
+- Do not use XML `<inheritdoc />` comments. Write explicit XML documentation in both interfaces and implementing classes, repeating the descriptions where appropriate, and document overrides directly.
 - Place all ViewModel and service tests in `src/BloodPressureDiary/BloodPressureDiary.UI.Tests`.
 - Use xUnit, AutoFixture, AutoFixture.AutoNSubstitute, and NSubstitute. Mock dependencies through interfaces.
 - Classes in `Fixtures` must inherit from `TestBase` and contain configuration and creation of the SUT, test data, and mocks. Keep shared AutoFixture (`IFixture`) and `AutoNSubstituteCustomization` configuration in `TestBase`.

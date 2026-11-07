@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Globalization;
-using BloodPressureDiary.UI.Database;
+using BloodPressureDiary.UI.Database.Entities;
 using BloodPressureDiary.UI.Interfaces;
 using BloodPressureDiary.UI.Resources.Localization;
 using CommunityToolkit.Mvvm.ComponentModel;

@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Net;
 using System.Text;
-using BloodPressureDiary.UI.Database;
+using BloodPressureDiary.UI.Database.Entities;
 using BloodPressureDiary.UI.Interfaces;
 using BloodPressureDiary.UI.Resources.Localization;
 using Microsoft.VisualBasic.FileIO;
@@ -11,7 +11,7 @@ namespace BloodPressureDiary.UI.Services;
 /// <summary>Exports measurements to CSV and HTML files and imports CSV backups.</summary>
 public sealed class FileExportService(IBloodPressureMeasurementRepository _repository, IFilePicker _filePicker, IFileSystem _fileSystem) : IFileExportService
 {
-    /// <inheritdoc />
+    /// <summary>Creates a CSV backup for the specified date range and returns its path.</summary>
     public async Task<string> CreateBackupAsync(DateTime? startDate = null, DateTime? endDate = null, CancellationToken cancellationToken = default)
     {
         var bloodPressureMeasurements = await _repository.GetAllAsync(startDate, endDate, cancellationToken);
@@ -30,7 +30,7 @@ public sealed class FileExportService(IBloodPressureMeasurementRepository _repos
         return await WriteAsync("blood-pressure-backup", ".csv", builder.ToString(), cancellationToken);
     }
 
-    /// <inheritdoc />
+    /// <summary>Imports measurements from a selected CSV backup and returns whether a file was selected.</summary>
     public async Task<bool> ImportBackupAsync(CancellationToken cancellationToken = default)
     {
         var file = await _filePicker.PickAsync(new PickOptions { PickerTitle = AppResources.ImportBackup });
@@ -82,7 +82,7 @@ public sealed class FileExportService(IBloodPressureMeasurementRepository _repos
         return true;
     }
 
-    /// <inheritdoc />
+    /// <summary>Creates an HTML report for the specified date range and returns its path.</summary>
     public async Task<string> CreateReportAsync(DateTime? startDate = null, DateTime? endDate = null, CancellationToken cancellationToken = default)
     {
         var bloodPressureMeasurements = await _repository.GetAllAsync(startDate, endDate, cancellationToken);

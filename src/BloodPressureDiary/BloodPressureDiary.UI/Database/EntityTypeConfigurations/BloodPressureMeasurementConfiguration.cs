@@ -1,12 +1,13 @@
+using BloodPressureDiary.UI.Database.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace BloodPressureDiary.UI.Database;
+namespace BloodPressureDiary.UI.Database.EntityTypeConfigurations;
 
 /// <summary>Configures the SQLite mapping for blood pressure measurements.</summary>
 public sealed class BloodPressureMeasurementConfiguration : IEntityTypeConfiguration<BloodPressureMeasurement>
 {
-    /// <inheritdoc />
+    /// <summary>Configures the database mapping for blood pressure measurements.</summary>
     public void Configure(EntityTypeBuilder<BloodPressureMeasurement> builder)
     {
         builder.ToTable("Measurements");
