@@ -8,6 +8,29 @@ namespace BloodPressureDiary.UI.Tests.ViewModels;
 /// <summary>Tests main page measurement entry behavior.</summary>
 public sealed class MainPageViewModelTests(MainPageViewModelFixture fixture) : IClassFixture<MainPageViewModelFixture>
 {
+    /// <summary>Opens the selected export options.</summary>
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void ExportCommand_OpensSelectedOptions(bool report)
+    {
+        // Arrange
+        fixture.Reset();
+        // Act
+        if (report)
+        {
+            fixture.Sut.ExportReportCommand.Execute(null);
+        }
+        else
+        {
+            fixture.Sut.ExportBackupCommand.Execute(null);
+        }
+
+        // Assert
+        Assert.True(fixture.Sut.IsExporting);
+        Assert.Equal(report ? AppResources.ExportReport : AppResources.ExportBackup, fixture.Sut.ExportWindowTitle);
+    }
+
     /// <summary>Opens the new measurement form.</summary>
     [Fact]
     public void AddBloodPressureMeasurementCommand_OpensForm()
