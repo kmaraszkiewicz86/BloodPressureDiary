@@ -26,7 +26,7 @@ public sealed class MainPageViewModel(
     /// <summary>Gets whether no measurements are currently available.</summary>
     public bool IsEmpty => BloodPressureMeasurements.Count == 0;
     /// <summary>Gets the available history filters.</summary>
-    public IReadOnlyList<string> HistoryFilters => [AppResources.AllMeasurements, AppResources.Today, AppResources.LastWeek, AppResources.LastMonth];
+    public IReadOnlyList<string> HistoryFilters => (string[])[AppResources.AllMeasurements, AppResources.Today, AppResources.LastWeek, AppResources.LastMonth];
     /// <summary>Gets or sets the selected history filter.</summary>
     public int SelectedHistoryFilter
     {
